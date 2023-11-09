@@ -251,6 +251,13 @@ function Projects() {
 
           {/* Project */}
           <ProjectCard
+            imageUrl={'/wakadinali.png'}
+            alt={'A screenshot of Wakadinali website home page'}
+            title={'Wakadinali'}
+            projectUrl={'https://wakadinali.netlify.app'}
+          />
+
+          <ProjectCard
             imageUrl={'/organiczones.png'}
             alt={'A screenshot of organic zones home page'}
             title={'Organic zones'}
@@ -271,13 +278,6 @@ function Projects() {
             alt={'A screenshot of Game of Thrones quiz app home page'}
             title={'Game of Thrones quiz app'}
             projectUrl={'https://got-quiz-app.netlify.app/'}
-          />
-
-          <ProjectCard
-            imageUrl={'/wakadinali.png'}
-            alt={'A screenshot of Wakadinali website'}
-            title={'Wakadinali'}
-            projectUrl={'https://wakadinali.netlify.app'}
           />
 
           <ProjectCard
