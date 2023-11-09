@@ -273,9 +273,12 @@ function Projects() {
             projectUrl={'https://got-quiz-app.netlify.app/'}
           />
 
-          {/* <ProjectCard 
-            imageUrl={}
-          /> */}
+          <ProjectCard
+            imageUrl={'/wakadinali.png'}
+            alt={'A screenshot of Wakadinali website'}
+            title={'Wakadinali'}
+            projectUrl={'https://wakadinali.netlify.app'}
+          />
 
           <ProjectCard
             imageUrl={'/kelectricals.png'}
