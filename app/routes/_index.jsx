@@ -254,7 +254,7 @@ function Projects() {
             imageUrl={'/organiczones.png'}
             alt={'A screenshot of organic zones home page'}
             title={'Organic zones'}
-            projectUrl={'https://organiczones.co.ke'}
+            projectUrl={'https://majestic-sable-8436ca.netlify.app'}
           />
 
 
@@ -272,6 +272,10 @@ function Projects() {
             title={'Game of Thrones quiz app'}
             projectUrl={'https://got-quiz-app.netlify.app/'}
           />
+
+          {/* <ProjectCard 
+            imageUrl={}
+          /> */}
 
           <ProjectCard
             imageUrl={'/kelectricals.png'}
