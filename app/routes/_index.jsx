@@ -261,7 +261,7 @@ function Projects() {
             imageUrl={'/organiczones.png'}
             alt={'A screenshot of organic zones home page'}
             title={'Organic zones'}
-            projectUrl={'https://majestic-sable-8436ca.netlify.app'}
+            projectUrl={'https://organiczones.co.ke/'}
           />
 
 
