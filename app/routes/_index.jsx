@@ -13,7 +13,7 @@ import ProjectCard from "../components/ProjectCard";
 export const meta = () => {
   return [
     { title: "Brian Mwangi" },
-    { name: "description", content: "Welcome to Remix!" },
+    { name: "description", content: "I build professional and high quality websites for businesses that scale well and offer great SEO" },
   ];
 };
 
