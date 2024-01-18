@@ -264,7 +264,12 @@ function Projects() {
             projectUrl={'https://organiczones.co.ke/'}
           />
 
-
+          <ProjectCard
+            imageUrl={'/nifty.png'}
+            alt={'A screenshot of Nifty e-School home page'}
+            title={'Nifty e-School'}
+            projectUrl={'https://niftyeschool.com/'}
+          />
           {/* Project */}
           <ProjectCard
             imageUrl={'/restaurant.png'}
