@@ -84,7 +84,6 @@ export default function Post() {
                         {/* TODO: Estimate reading time */}
                     </time> -- 2 min read
                     </p>
-
                 </div>
                 <img src={post[0].mainImage.asset.url} alt="" className='aspect-video w-full object-cover' />
                 <div className='px-2 md:px-6'>
@@ -107,7 +106,6 @@ export function ErrorBoundary() {
                         <ErrorIcon />
                     </div>
                     <h1 className='font-semibold text-3xl text-red-500'>{error.status} {error.statusText}</h1>
-                    <p>{error.data}</p>
                     <Link to="/posts" className='px-4 py-2 rounded flex gap-1 text-white bg-gradient-to-r from-[#c94b4b] to-[#4b134f] hover:bg-gradient-to-r hover:from-[#4b134f] hover:to-[#c94b4b]'><ArrowLeftIcon /> Back to articles</Link>
                 </div>
             </div>
@@ -116,11 +114,11 @@ export function ErrorBoundary() {
         console.log({ error });
         return (
             <div className='w-full h-screen flex justify-center items-center'>
-                <div className='flex flex-col items-center gap-4'>
+                <div className='flex flex-col items-center gap-4 px-6 xl:px-0'>
                     <div className='w-40'>
                         <ErrorIcon />
                     </div>
-                    <h1 className='text-red-500'>Error: {error.message}</h1>
+                    <h1 className='text-red-500 text-3xl'>Error fetching post</h1>
                     <Link to="/posts" className='px-4 py-2 rounded flex gap-1 text-white bg-gradient-to-r from-[#c94b4b] to-[#4b134f] hover:bg-gradient-to-r hover:from-[#4b134f] hover:to-[#c94b4b]'><ArrowLeftIcon /> Back to articles</Link>
                 </div>
             </div>

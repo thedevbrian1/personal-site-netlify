@@ -7,7 +7,7 @@ import Heading from "../components/Heading";
 import Input from "../components/Input";
 import { redirect } from "@remix-run/node";
 import { addContactToList, badRequest, createContact, sendEmail, validateEmail, validateMessage, validateName } from "../utils";
-import { Facebook, LinkedIn, Twitter } from "../components/Icon";
+import { ArrowLeftIcon, ErrorIcon, Facebook, LinkedIn, Twitter } from "../components/Icon";
 import ProjectCard from "../components/ProjectCard";
 
 export const meta = () => {
@@ -564,4 +564,36 @@ function Footer() {
       </div>
     </footer>
   );
+}
+
+export function ErrorBoundary() {
+  const error = useRouteError();
+
+  if (isRouteErrorResponse(error)) {
+    console.log({ error });
+    return (
+      <div className='w-full h-screen flex justify-center items-center'>
+        <div className='flex flex-col items-center gap-4 text-gray-300'>
+          <div className='w-40'>
+            <ErrorIcon />
+          </div>
+          <h1 className='font-semibold text-3xl text-red-500'>{error.status} {error.statusText}</h1>
+          <Link to="/" className='px-4 py-2 rounded flex gap-1 text-white bg-gradient-to-r from-[#c94b4b] to-[#4b134f] hover:bg-gradient-to-r hover:from-[#4b134f] hover:to-[#c94b4b]'><ArrowLeftIcon /> Try again</Link>
+        </div>
+      </div>
+    );
+  } else if (error instanceof Error) {
+    console.log({ error });
+    return (
+      <div className='w-full h-screen flex justify-center items-center'>
+        <div className='flex flex-col items-center gap-4 px-6 xl:px-0'>
+          <div className='w-40'>
+            <ErrorIcon />
+          </div>
+          <h1 className='text-red-500 text-3xl'>Error fetching data</h1>
+          <Link to="/" className='px-4 py-2 rounded flex gap-1 text-white bg-gradient-to-r from-[#c94b4b] to-[#4b134f] hover:bg-gradient-to-r hover:from-[#4b134f] hover:to-[#c94b4b]'><ArrowLeftIcon /> Try again</Link>
+        </div>
+      </div>
+    );
+  }
 }
