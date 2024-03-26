@@ -33,10 +33,10 @@ function PostCard({ href, title, description, imgSrc, createdAt }) {
         <Link
             to={href}
             prefetch="intent"
-            className="grid grid-cols-3 bg-brand-alt-blue rounded-lg hover:outline hover:outline-1  hover:outline-[#feb465] transition ease-in-out duration-300"
+            className="grid md:grid-cols-3 bg-brand-alt-blue rounded-lg hover:outline hover:outline-1  hover:outline-[#feb465] transition ease-in-out duration-300"
         >
-            <img src={imgSrc} alt="" className="w-full h-52 object-cover col-span-1 p-4 rounded-lg" />
-            <div className="col-span-2 p-6">
+            <img src={imgSrc} alt="" className="w-full h-52 object-cover md:col-span-1 p-4 rounded-lg" />
+            <div className="md:col-span-2 p-6">
                 <h2 className="font-semibold text-lg lg:text-xl">{title}</h2>
                 <p><time dateTime={createdAt}>
                     {new Intl.DateTimeFormat('en-GB', {
