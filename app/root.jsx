@@ -21,6 +21,8 @@ import Nav from "./components/Nav";
 import { ArrowLeftIcon, ErrorIcon, Facebook, LinkedIn, Twitter } from "./components/Icon";
 import Input from "./components/Input";
 import { useEffect, useRef } from "react";
+import { addContactToList, badRequest, createContact, validateEmail } from "./utils";
+import { redirect } from "@remix-run/node";
 
 export const links = () => [
   { rel: "stylesheet", href: tailwindStyles },
@@ -29,6 +31,30 @@ export const links = () => [
   { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@400;700&family=Source+Sans+3:wght@300;400;600&display=swap" },
   ...(cssBundleHref ? [{ rel: "stylesheet", href: cssBundleHref }] : []),
 ];
+
+export async function action({ request }) {
+  const formData = await request.formData();
+  const email = formData.get('email');
+
+  const field = { email };
+  const fieldErrors = {
+    email: validateEmail(email)
+  }
+
+  // Return errors if any
+  if (Object.values(fieldErrors).some(Boolean)) {
+    return badRequest({ field, fieldErrors });
+  }
+  // First create contact then add contact to a contact list
+  //
+  const contact = await createContact(email);
+
+  const contactEmail = contact.Data[0].Email;
+
+  await addContactToList(contactEmail);
+
+  return redirect('/success');
+}
 
 export default function App() {
   const navLinks = [

@@ -7,16 +7,17 @@ module.exports = {
       : undefined,
   serverBuildPath: ".netlify/functions-internal/server.js",
   // appDirectory: "app",
-  // assetsBuildDirectory: "public/build",
+  assetsBuildDirectory: "public/build",
   // publicPath: "/build/",
   serverModuleFormat: "cjs",
-  future: {
-    v2_dev: true,
-    v2_errorBoundary: true,
-    v2_headers: true,
-    v2_meta: true,
-    v2_normalizeFormMethod: true,
-    v2_routeConvention: true,
+  browserNodeBuiltinsPolyfill: {
+    modules: {
+      buffer: true,
+      fs: "empty",
+    },
+    globals: {
+      Buffer: true,
+    },
   },
-  tailwind: true
+  // tailwind: true
 };
