@@ -9,6 +9,11 @@ export function headers({ loaderHeaders }) {
     return { 'Cache-Control': loaderHeaders.get('Cache-Control') };
 }
 
+export function meta({ data }) {
+    return [
+        { title: data[0].title }
+    ]
+}
 export async function loader({ params }) {
     const post = await getPost(params.slug);
     return json(post.result, {
