@@ -9,12 +9,18 @@ import {
   Scripts,
   ScrollRestoration,
   isRouteErrorResponse,
+  useFetcher,
   useRouteError,
 } from "@remix-run/react";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/dist/ScrollTrigger";
+
 
 import tailwindStyles from "./styles/tailwind.css";
 import Nav from "./components/Nav";
-import { ArrowLeftIcon, ErrorIcon } from "./components/Icon";
+import { ArrowLeftIcon, ErrorIcon, Facebook, LinkedIn, Twitter } from "./components/Icon";
+import Input from "./components/Input";
+import { useEffect, useRef } from "react";
 
 export const links = () => [
   { rel: "stylesheet", href: tailwindStyles },
@@ -77,11 +83,133 @@ export default function App() {
           <Nav navLinks={navLinks} />
         </header>
         <Outlet />
+        <Footer />
         <ScrollRestoration />
         <Scripts />
         <LiveReload />
       </body>
     </html>
+  );
+}
+
+function Footer() {
+  const fetcher = useFetcher();
+  gsap.registerPlugin(ScrollTrigger);
+
+  const footerRef = useRef(null);
+
+  // function handleHover() {
+  //   gsap.to("#subscribeBtn", {
+  //     backgroundColor: '#c94b4b'
+  //   });
+  // }
+
+  useEffect(() => {
+    let ctx = gsap.context(() => {
+      gsap.from("#footer", {
+        opacity: 0,
+        y: 20,
+        duration: 1,
+        scrollTrigger: "#footer"
+      });
+    }, footerRef);
+    return ctx.revert();
+  }, []);
+
+  return (
+    <footer ref={footerRef} className="relative">
+      <div className="w-36 h-36 lg:w-44 lg:h-44 absolute -left-20 lg:-left-36 top-10 bg-brand-orange blur-3xl bg-opacity-20 rounded-full" />
+      <div
+        id="footer"
+        className="w-4/5 xl:max-w-5xl mx-auto mt-16"
+      >
+        <div className="flex justify-between">
+          <h2 className="font-heading text-white uppercase">Brian Mwangi</h2>
+          <div className="flex gap-3">
+            {/* <img src="/twitter.svg" alt="Twitter icon" />
+              <img src="/facebook.svg" alt="Facebook icon" /> */}
+            <a href="https://www.linkedin.com/in/brian-mwangi-9b01651a1/" target="_blank" rel="noopener noreferrer" >
+              <LinkedIn />
+            </a>
+            <a href="https://twitter.com/_3R14N_" target="_blank" rel="noopener noreferrer">
+              <Twitter />
+            </a>
+            <a href="https://www.facebook.com/brayo.notnice" target="_blank" rel="noopener noreferrer">
+              <Facebook />
+            </a>
+          </div>
+        </div>
+        <div className="bg-slightly-lighter-dark-blue rounded-xl border border-slate-500 mt-10 px-5 md:px-8 py-10 grid lg:grid-cols-2 gap-5">
+          <div className="lg:self-center">
+            <h2 className="text-white font-heading font-bold text-xl lg:text-3xl">Sign up for the newsletter</h2>
+            <p className="font-body text-body-white lg:text-lg mt-2 lg:mt-4">Receive interesting tips and articles in real time. You can unsubscribe at any time.</p>
+          </div>
+          <div className="md:w-3/4 lg:w-auto">
+            <fetcher.Form method="post" className="xl:max-w-sm">
+              <fieldset className="grid gap-3">
+                <div>
+                  <label htmlFor="subscribe" className="text-body-white">
+                    Email
+                    {(fetcher.data?.fieldErrors)
+                      ? (<span className="text-red-500 ml-2">{fetcher.data?.fieldErrors?.email}</span>)
+                      : <>&nbsp;</>
+                    }
+                  </label>
+                  {/* <input
+                    type="email"
+                    name="email"
+                    id="subscribe"
+                    className="w-full xl:max-w-sm block bg-transparent border border-orange-300 rounded-lg p-2 text-body-white"
+                  /> */}
+                  {/* <input
+                    type="text"
+                    name="email"
+                    id="subscribe"
+                    placeholder="johndoe@gmail.com"
+                    className="nm-inset-slightly-lighter-dark-blue border-none outline-none w-full xl:max-w-sm block rounded-lg  text-body-white"
+                  /> */}
+                  <Input
+                    type='email'
+                    name='email'
+                    id='subscribe'
+                    placeholder='johndoe@gmail.com'
+                  />
+                </div>
+                {/* <div className="relative max-w-sm group">
+                  <div className="absolute inset-0 bg-gradient-to-r from-[#f12711] to-[#f5af19] group-hover:bg-gradient-to-r group-hover:from-[#f5af19] group-hover:to-[#f12711] transition ease-in-out duration-5000 blur opacity-75 rounded-lg" />
+
+                  <button
+                    type="submit"
+                    name="_action"
+                    value="subscribe"
+                    className="relative bg-dark-blue w-full py-2 px-auto rounded-lg font-bold lg:text-lg text-white">
+                    {(fetcher.submission)
+                      ? 'Subscribing...'
+                      : 'Subscribe'
+                    }
+                  </button>
+                </div> */}
+                <button
+                  id="subscribeBtn"
+                  type="submit"
+                  name="_action"
+                  value="subscribe"
+                  // onMouseEnter={handleHover}
+                  className=" bg-gradient-to-r from-[#c94b4b] to-[#4b134f] hover:bg-gradient-to-r hover:from-[#4b134f] hover:to-[#c94b4b] transition ease-in-out duration-200 w-full py-3 px-auto  rounded-lg font-bold lg:text-lg text-white group">
+                  {(fetcher.submission)
+                    ? 'Subscribing...'
+                    : 'Subscribe'
+                  }
+                </button>
+              </fieldset>
+            </fetcher.Form>
+          </div>
+        </div>
+      </div>
+      <div className="w-full bg-[#533D55] text-body-white font-body flex justify-center mt-10 py-3">
+        Copyright &copy; {new Date().getFullYear()}
+      </div>
+    </footer>
   );
 }
 
