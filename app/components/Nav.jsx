@@ -1,4 +1,5 @@
-import { NavLink } from "@remix-run/react";
+// import { NavLink } from "@remix-run/react";
+import { Link, useLocation } from "@remix-run/react";
 import { useState } from "react";
 import { MenuIcon, XIcon } from "~/components/Icon";
 
@@ -36,9 +37,6 @@ export default function Nav({ navLinks }) {
                                     >
                                         <NavLink
                                             to={navLink.path}
-                                            prefetch='intent'
-                                            end
-                                            className={({ isActive }) => isActive ? 'underline' : ''}
                                         >
                                             {navLink.name}
                                         </NavLink>
@@ -51,5 +49,20 @@ export default function Nav({ navLinks }) {
                 }
             </div>
         </nav>
+    );
+}
+
+function NavLink({ to, children }) {
+    const location = useLocation();
+    const isSelected = to === location.pathname || location.pathname.startsWith(`${to}/`);
+
+    return (
+        <Link
+            to={to}
+            prefetch="intent"
+            className={`${isSelected ? 'text-brand-orange' : ''}`}
+        >
+            {children}
+        </Link>
     );
 }
