@@ -1,12 +1,21 @@
-import { PortableText } from '@portabletext/react';
+import { json } from '@remix-run/node';
 import { Link, isRouteErrorResponse, useLoaderData, useRouteError } from '@remix-run/react';
-import { getPost } from '../models/post.server';
 import { useEffect, useState } from 'react';
+import { PortableText } from '@portabletext/react';
+import { getPost } from '../models/post.server';
 import { ArrowLeftIcon, CheckIcon, ClipboardIcon, ErrorIcon } from '../components/Icon';
+
+export function headers({ loaderHeaders }) {
+    return { 'Cache-Control': loaderHeaders.get('Cache-Control') };
+}
 
 export async function loader({ params }) {
     const post = await getPost(params.slug);
-    return post.result;
+    return json(post.result, {
+        headers: {
+            "Cache-Control": 'max-age=86400 s-maxage=604800'
+        }
+    });
 }
 
 const components = {
