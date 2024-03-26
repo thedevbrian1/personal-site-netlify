@@ -61,25 +61,28 @@ function Code({ value }) {
                     </span>
                 )
             }
-
-
             <pre className='p-4'><code>{value.code}</code></pre>
-
         </div>
     );
 }
 
 export default function Post() {
     const post = useLoaderData();
-    console.log({ post });
 
     return (
         <main className='mt-20 py-16 px-6  max-w-3xl 2xl:max-w-3xl mx-auto text-gray-300 prose prose-code:text-gray-300'>
             <article>
                 <div className='px-2 md:px-6'>
                     <h1 className='text-gray-300'>{post[0].title}</h1>
-                    <p><time dateTime={post[0]._createdAt}>{new Date(post[0]._createdAt).toLocaleDateString()}
-                    </time> -- 3 min read
+                    <p><time dateTime={post[0]._createdAt}>
+                        {new Intl.DateTimeFormat('en-GB', {
+                            dateStyle: 'full',
+                            // timeStyle: 'long',
+                            timeZone: 'Australia/Sydney'
+                        }).format(new Date(post[0]._createdAt))
+                        }
+                        {/* TODO: Estimate reading time */}
+                    </time> -- 2 min read
                     </p>
 
                 </div>
@@ -103,7 +106,7 @@ export function ErrorBoundary() {
                     <div className='w-40'>
                         <ErrorIcon />
                     </div>
-                    <h1 className='font-semibold text-3xl'>{error.status} {error.statusText}</h1>
+                    <h1 className='font-semibold text-3xl text-red-500'>{error.status} {error.statusText}</h1>
                     <p>{error.data}</p>
                     <Link to="/posts" className='px-4 py-2 rounded flex gap-1 text-white bg-gradient-to-r from-[#c94b4b] to-[#4b134f] hover:bg-gradient-to-r hover:from-[#4b134f] hover:to-[#c94b4b]'><ArrowLeftIcon /> Back to articles</Link>
                 </div>
@@ -117,7 +120,7 @@ export function ErrorBoundary() {
                     <div className='w-40'>
                         <ErrorIcon />
                     </div>
-                    <h1 className='text-gray-300'>{error.message}</h1>
+                    <h1 className='text-red-500'>Error: {error.message}</h1>
                     <Link to="/posts" className='px-4 py-2 rounded flex gap-1 text-white bg-gradient-to-r from-[#c94b4b] to-[#4b134f] hover:bg-gradient-to-r hover:from-[#4b134f] hover:to-[#c94b4b]'><ArrowLeftIcon /> Back to articles</Link>
                 </div>
             </div>

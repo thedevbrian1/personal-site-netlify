@@ -42,6 +42,11 @@ export default function App() {
       name: 'About',
       path: '/#about',
       id: 4,
+    },
+    {
+      name: 'Blog',
+      path: '/posts',
+      id: 5,
     }
   ];
   return (

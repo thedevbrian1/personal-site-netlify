@@ -6,6 +6,7 @@ export default {
     extend: {
       colors: {
         'dark-blue': '#1F2028',
+        'brand-alt-blue': '#34353c',
         'slightly-lighter-dark-blue': '#2E3039',
         'brand-orange': '#F38016',
         'body-white': '#DADADA'
