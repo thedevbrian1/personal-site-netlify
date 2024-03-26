@@ -10,7 +10,7 @@ export async function getPosts() {
 }
 
 export async function getPost(slug) {
-    const postQuery = `*[_type == 'post' && slug.current == '${slug}']{title,body,_createdAt,mainImage{asset->{url}}}`;
+    const postQuery = `*[_type == 'post' && slug.current == '${slug}']{title,body,_createdAt,altText,mainImage{asset->{url}}}`;
     const postUrl = `${queryUrl}?query=${encodeURIComponent(postQuery)}`;
     const res = await fetch(postUrl);
 

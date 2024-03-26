@@ -70,8 +70,17 @@ export default function Post() {
     const post = useLoaderData();
 
     return (
-        <main className='mt-20 py-16 px-6  max-w-3xl 2xl:max-w-3xl mx-auto text-gray-300 prose prose-code:text-gray-300'>
-            <article>
+        <main className='mt-20 py-16 px-6  max-w-3xl 2xl:max-w-3xl mx-auto text-gray-300'>
+            <div className='ml-2 md:ml-6'>
+                <Link
+                    to="/posts"
+                    prefetch='intent'
+                    className="flex gap-1 hover:underline transition ease-in-out duration-300"
+                >
+                    <ArrowLeftIcon />Back to articles
+                </Link>
+            </div>
+            <article className='prose text-gray-300 prose-code:text-gray-300 mt-8'>
                 <div className='px-2 md:px-6'>
                     <h1 className='text-gray-300'>{post[0].title}</h1>
                     <p><time dateTime={post[0]._createdAt}>
@@ -85,7 +94,7 @@ export default function Post() {
                     </time> -- 2 min read
                     </p>
                 </div>
-                <img src={post[0].mainImage.asset.url} alt="" className='aspect-video w-full object-cover' />
+                <img src={post[0].mainImage.asset.url} alt={post[0].altText} className='aspect-video w-full object-cover' />
                 <div className='px-2 md:px-6'>
                     <PortableText value={post[0].body} components={components} />
                 </div>
