@@ -26,7 +26,7 @@ const Input = forwardRef(({ type, name, id, placeholder, defaultValue, fieldErro
                     id={id}
                     placeholder={placeholder}
                     onChange={handleChange}
-                    className={`block w-full px-3 py-2 border border-gray-100 bg-transparent rounded text-gray-800 focus:border-none focus:outline-none focus:ring-2 focus:ring-white transition ease-in-out duration-300 ${fieldError ? 'border-red-700' : 'border-gray-400'}`}
+                    className={`block w-full px-3 py-2 border border-gray-100 bg-transparent rounded text-gray-200 focus:border-none focus:outline-none focus:ring-2 focus:ring-white transition ease-in-out duration-300 ${fieldError ? 'border-red-700' : 'border-gray-400'}`}
                 />)
                 : (<input
                     ref={ref}
@@ -39,7 +39,7 @@ const Input = forwardRef(({ type, name, id, placeholder, defaultValue, fieldErro
                     min={type === 'number' ? 1 : undefined}
                     // onBlur={handleBlur}
                     // onBlur={onBlur}
-                    className={`block w-full px-3 py-2 border border-gray-100 bg-transparent rounded text-gray-800  focus:border-none focus:outline-none focus:ring-2 focus:ring-white transition ease-in-out duration-300 ${fieldError ? 'border-red-700' : 'border-gray-400'}`}
+                    className={`block w-full px-3 py-2 border border-gray-100 bg-transparent rounded text-gray-200  focus:border-none focus:outline-none focus:ring-2 focus:ring-white transition ease-in-out duration-300 ${fieldError ? 'border-red-700' : 'border-gray-400'}`}
                 />)
             }
 
