@@ -254,10 +254,29 @@ function Projects() {
 
           {/* Project */}
           <ProjectCard
+            imageUrl={'/wonderland.png'}
+            alt={'A screenshot of the Wonderland Aventura website home page'}
+            title={'Wonderland Aventura'}
+            projectUrl={'https://wonderland-n1o4.vercel.app/'}
+          />
+          <ProjectCard
+            imageUrl={'/jbmotors.png'}
+            alt={'A screenshot of JB Motors Limited website home page'}
+            title={'JB Motors Ltd'}
+            projectUrl={'https://www.jbmotorsltd.com/'}
+          />
+          <ProjectCard
             imageUrl={'/wakadinali.png'}
             alt={'A screenshot of Wakadinali website home page'}
             title={'Wakadinali'}
             projectUrl={'https://wakadinali.netlify.app'}
+          />
+
+          <ProjectCard
+            imageUrl={'/nifty.png'}
+            alt={'A screenshot of Paragon e-School home page'}
+            title={'Paragon e-School'}
+            projectUrl={'https://paragoneschool.com/'}
           />
 
           <ProjectCard
@@ -268,10 +287,10 @@ function Projects() {
           />
 
           <ProjectCard
-            imageUrl={'/nifty.png'}
-            alt={'A screenshot of Nifty e-School home page'}
-            title={'Nifty e-School'}
-            projectUrl={'https://niftyeschool.com/'}
+            imageUrl={'/netcom.png'}
+            alt={'A screenshot of Netcom website home page'}
+            title={'Netcom'}
+            projectUrl={'https://www.netcomss.com/'}
           />
           {/* Project */}
           <ProjectCard
