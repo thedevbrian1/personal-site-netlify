@@ -237,7 +237,7 @@ function Projects() {
     }
   }, []);
   return (
-    <section className="w-4/5 xl:max-w-5xl mx-auto" id="projects" ref={projectsRef}>
+    <section className="px-6 md:px-12  xl:px-0 lg:max-w-6xl mx-auto" id="projects" ref={projectsRef}>
       <div
         id="projectsDiv"
         className="text-center pt-20 lg:pt-24 w-full space-y-4"
@@ -250,7 +250,7 @@ function Projects() {
               Projects should display inside the frame
               Either a slider or scroll animation
           */}
-        <div className="flex flex-col items-center justify-center sm:flex-row md:flex-wrap w-full gap-8 mt-2">
+        <div className="w-full grid md:grid-cols-2 lg:grid-cols-3 gap-8 mt-16">
 
           {/* Project */}
           <ProjectCard
