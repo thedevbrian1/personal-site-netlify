@@ -6,7 +6,17 @@ export async function getPosts() {
     const postsUrl = `${queryUrl}?query=${encodeURIComponent(postsQuery)}`;
     const res = await fetch(postsUrl);
 
-    return res.json();
+    let data = await res.json();
+    let formattedPosts = data.result.map((post) => {
+        let formattedCreatedAt = new Intl.DateTimeFormat('en-GB', {
+            dateStyle: 'full',
+            timeZone: 'Africa/Nairobi'
+        }).format(new Date(post._createdAt));
+        return { ...post, formattedCreatedAt };
+    });
+
+
+    return formattedPosts;
 }
 
 export async function getPost(slug) {
@@ -14,5 +24,14 @@ export async function getPost(slug) {
     const postUrl = `${queryUrl}?query=${encodeURIComponent(postQuery)}`;
     const res = await fetch(postUrl);
 
-    return res.json();
+    let data = await res.json();
+    let formattedPost = data.result.map((post) => {
+        let formattedCreatedAt = new Intl.DateTimeFormat('en-GB', {
+            dateStyle: 'full',
+            timeZone: 'Africa/Nairobi'
+        }).format(new Date(post._createdAt));
+        return { ...post, formattedCreatedAt };
+    });
+
+    return formattedPost;
 }

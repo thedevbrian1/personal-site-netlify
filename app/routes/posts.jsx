@@ -4,12 +4,11 @@ import { ArrowLeftIcon, ErrorIcon } from "../components/Icon";
 
 export async function loader() {
     const posts = await getPosts();
-    return posts.result;
+    return posts;
 }
 
 export default function Posts() {
     const posts = useLoaderData();
-    console.log({ posts });
     return (
         <main className="text-gray-300 mt-20 py-16 px-6 xl:px-0 lg:max-w-2xl mx-auto">
             <h1 className="font-bold text-4xl">Articles</h1>
@@ -21,7 +20,7 @@ export default function Posts() {
                         title={post.title}
                         description={post.description}
                         imgSrc={post.mainImage?.asset.url}
-                        createdAt={post._createdAt}
+                        createdAt={post.formattedCreatedAt}
                     />
                 ))}
             </ul>
@@ -39,13 +38,8 @@ function PostCard({ href, title, description, imgSrc, createdAt }) {
             <img src={imgSrc} alt="" className="w-full h-52 object-cover md:col-span-1 p-4 rounded-lg" />
             <div className="md:col-span-2 p-6">
                 <h2 className="font-semibold text-lg lg:text-xl">{title}</h2>
-                <p><time dateTime={createdAt}>
-                    {new Intl.DateTimeFormat('en-GB', {
-                        dateStyle: 'full',
-                        // timeStyle: 'long',
-                        timeZone: 'Australia/Sydney'
-                    }).format(new Date(createdAt))
-                    }
+                <p className="mt-2"><time dateTime={new Date(createdAt)}>
+                    {createdAt}
                 </time>
                 </p>
                 <p className="mt-4 text-gray-400">{description}</p>
