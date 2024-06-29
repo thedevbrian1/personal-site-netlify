@@ -4,6 +4,14 @@ import { useEffect, useState } from 'react';
 import { PortableText } from '@portabletext/react';
 import { getPost } from '../models/post.server';
 import { ArrowLeftIcon, CheckIcon, ClipboardIcon, ErrorIcon } from '../components/Icon';
+import ReactPlayer from "react-player";
+import Lowlight from "react-lowlight";
+import javascript from 'highlight.js/lib/languages/javascript';
+import 'highlight.js/styles/night-owl.css';
+
+import { urlFor } from '~/utils';
+
+Lowlight.registerLanguage('js', javascript);
 
 export function headers({ loaderHeaders }) {
     return { 'Cache-Control': loaderHeaders.get('Cache-Control') };
@@ -25,7 +33,41 @@ export async function loader({ params }) {
 
 const components = {
     types: {
-        code: Code
+        image: ({ value }) => (
+            <img
+                src={`${urlFor(value.asset)}`}
+                alt=""
+                className="revealing-image max-w-xs lg:max-w-sm mx-auto aspect-[4/3] object-contain"
+            />
+        ),
+        code: Code,
+        youtube: ({ value }) => {
+            console.log({ value })
+            if (!value || !value.url) {
+                return null;
+            } else {
+                let { url } = value;
+                return <ReactPlayer url={url} />
+            }
+        }
+    },
+    block: {
+        h2: ({ children }) => <h2 className='text-gray-300'>{children}</h2>
+    },
+    marks: {
+        link: ({ value, children }) => {
+            let target = (value?.href || '').startsWith('http') ? '_blank' : undefined;
+            return (
+                <a
+                    href={value?.href}
+                    target={target}
+                    rel={target === '_blank' && 'noindex nofollow noreferrer noopener'}
+                    className='text-brand-orange'
+                >
+                    {children}
+                </a>
+            )
+        }
     }
 }
 
@@ -75,7 +117,14 @@ function Code({ value }) {
                     </span>
                 )
             }
-            <pre className='p-4'><code>{value.code}</code></pre>
+            {/* <pre className='p-4'><code>{value.code}</code></pre> */}
+            {/* <SyntaxHighlighter
+                language={value.language || 'javascript'}
+            // style={solarizedlight}
+            >
+                {value.code}
+            </SyntaxHighlighter> */}
+            <Lowlight language="js" value={value.code} />
         </div>
     );
 }
@@ -108,7 +157,7 @@ export default function Post() {
                     </time> -- 2 min read
                     </p>
                 </div>
-                <img src={post[0].mainImage.asset.url} alt={post[0].altText} className='aspect-video w-full object-cover' />
+                <img src={post[0].mainImage?.asset.url} alt={post[0].altText} className='aspect-video w-full object-cover' />
                 <div className='px-2 md:px-6'>
                     <PortableText value={post[0].body} components={components} />
                 </div>

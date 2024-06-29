@@ -3,37 +3,57 @@ import { cssBundleHref } from "@remix-run/css-bundle";
 import {
   Link,
   Links,
-  LiveReload,
   Meta,
   Outlet,
   Scripts,
   ScrollRestoration,
   isRouteErrorResponse,
+  json,
   useFetcher,
+  useLoaderData,
   useRouteError,
 } from "@remix-run/react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/dist/ScrollTrigger";
 
 
-import tailwindStyles from "./styles/tailwind.css";
+import "./styles/tailwind.css";
 import Nav from "./components/Nav";
 import { ArrowLeftIcon, ErrorIcon, Facebook, LinkedIn, Twitter } from "./components/Icon";
 import Input from "./components/Input";
 import { useEffect, useRef } from "react";
-import { addContactToList, badRequest, createContact, validateEmail } from "./utils";
 import { redirect } from "@remix-run/node";
+import { honeypot } from "./.server/honeypot";
+import { HoneypotInputs } from "remix-utils/honeypot/react";
+import { HoneypotProvider } from "remix-utils/honeypot/react";
+import { SpamError } from "remix-utils/honeypot/server";
+import { badRequest, validateEmail } from "./.server/validation";
+import { addContactToList, createContact } from "./.server/email";
 
 export const links = () => [
-  { rel: "stylesheet", href: tailwindStyles },
+  // { rel: "stylesheet", href: tailwindStyles },
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
   { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "true" },
   { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@400;700&family=Source+Sans+3:wght@300;400;600&display=swap" },
   ...(cssBundleHref ? [{ rel: "stylesheet", href: cssBundleHref }] : []),
 ];
 
+export async function loader() {
+  return json({ honeypotInputProps: honeypot.getInputProps() });
+}
+
 export async function action({ request }) {
   const formData = await request.formData();
+
+  try {
+    honeypot.check(formData);
+  } catch (error) {
+    if (error instanceof SpamError) {
+      throw new Response('Form not submitted properly', { status: 400 });
+    }
+    throw error;
+  }
+
   const email = formData.get('email');
 
   const field = { email };
@@ -56,7 +76,9 @@ export async function action({ request }) {
   return redirect('/success');
 }
 
-export default function App() {
+export function Layout({ children }) {
+  let { honeypotInputProps } = useLoaderData();
+
   const navLinks = [
     {
       name: 'Home',
@@ -108,14 +130,18 @@ export default function App() {
           </Link>
           <Nav navLinks={navLinks} />
         </header>
-        <Outlet />
+        <HoneypotProvider {...honeypotInputProps}>
+          {children}
+        </HoneypotProvider>
         <Footer />
         <ScrollRestoration />
         <Scripts />
-        <LiveReload />
       </body>
     </html>
   );
+}
+export default function App() {
+  return <Outlet />
 }
 
 function Footer() {
@@ -172,6 +198,7 @@ function Footer() {
           </div>
           <div className="md:w-3/4 lg:w-auto">
             <fetcher.Form method="post" className="xl:max-w-sm">
+              <HoneypotInputs />
               <fieldset className="grid gap-3">
                 <div>
                   <label htmlFor="subscribe" className="text-body-white">

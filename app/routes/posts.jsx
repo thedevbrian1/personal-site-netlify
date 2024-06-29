@@ -20,7 +20,7 @@ export default function Posts() {
                         href={post.slug.current}
                         title={post.title}
                         description={post.description}
-                        imgSrc={post.mainImage.asset.url}
+                        imgSrc={post.mainImage?.asset.url}
                         createdAt={post._createdAt}
                     />
                 ))}

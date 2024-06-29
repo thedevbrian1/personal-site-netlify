@@ -6,9 +6,14 @@ import { ScrollTrigger } from "gsap/dist/ScrollTrigger";
 import Heading from "../components/Heading";
 import Input from "../components/Input";
 import { redirect } from "@remix-run/node";
-import { addContactToList, badRequest, createContact, sendEmail, validateEmail, validateMessage, validateName } from "../utils";
+import { badRequest, validateEmail, validateMessage, validateName } from "../.server/validation";
+import { sendEmail } from "../.server/email";
 import { ArrowLeftIcon, ErrorIcon, Facebook, LinkedIn, Twitter } from "../components/Icon";
 import ProjectCard from "../components/ProjectCard";
+import { honeypot } from "../.server/honeypot";
+import { HoneypotInputs } from "remix-utils/honeypot/react";
+import { HoneypotProvider } from "remix-utils/honeypot/react";
+import { SpamError } from "remix-utils/honeypot/server";
 
 export const meta = () => {
   return [
@@ -23,6 +28,15 @@ export function headers() {
 
 export async function action({ request }) {
   const formData = await request.formData();
+  try {
+    honeypot.check(formData);
+  } catch (error) {
+    if (error instanceof SpamError) {
+      throw new Response('Form not submitted properly', { status: 400 });
+    }
+    throw error;
+  }
+
   const action = formData.get('_action');
 
   // const res = await mailjet.get("listrecipient", { 'version': 'v3' }).request();
@@ -55,31 +69,6 @@ export async function action({ request }) {
     return redirect('/success');
   }
 
-  if (action === 'subscribe') {
-    // Subscribe to newsletter
-
-    const email = formData.get('email');
-
-    const field = { email };
-    const fieldErrors = {
-      email: validateEmail(email)
-    }
-
-    // Return errors if any
-    if (Object.values(fieldErrors).some(Boolean)) {
-      return badRequest({ field, fieldErrors });
-    }
-    // First create contact then add contact to a contact list
-    //
-    const contact = await createContact(email);
-
-    const contactEmail = contact.Data[0].Email;
-
-    await addContactToList(contactEmail);
-
-    return redirect('/success');
-
-  }
   return null;
 }
 
@@ -383,6 +372,7 @@ function ContactForm() {
         <div className="lg:px-2">
           {/* Form */}
           <fetcher.Form method="post" className="xl:max-w-sm">
+            <HoneypotInputs />
             <fieldset className="grid gap-3">
               <div>
                 <label htmlFor="name" className="text-body-white">
