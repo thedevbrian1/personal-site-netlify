@@ -19,7 +19,11 @@ export function headers({ loaderHeaders }) {
 
 export function meta({ data }) {
     return [
-        { title: data[0].title }
+        { title: data[0].title },
+        {
+            name: 'description',
+            content: data[0].description
+        }
     ]
 }
 export async function loader({ params }) {
@@ -121,7 +125,6 @@ function Code({ value }) {
 
 export default function Post() {
     const post = useLoaderData();
-
     // FIXME: Fix FOUC in production and hydration errors
     return (
         <main className='mt-20 py-16 px-6  max-w-3xl 2xl:max-w-3xl mx-auto text-gray-300'>
