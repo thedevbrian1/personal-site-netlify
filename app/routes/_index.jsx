@@ -22,9 +22,9 @@ export const meta = () => {
   ];
 };
 
-export function headers() {
-  return { 'Cache-Control': 'max-age=259200' };
-}
+// export function headers() {
+//   return { 'Cache-Control': 'max-age=259200' };
+// }
 
 export async function action({ request }) {
   const formData = await request.formData();
@@ -229,17 +229,17 @@ function Projects() {
     <section className="px-6 md:px-12  xl:px-0 lg:max-w-6xl mx-auto" id="projects" ref={projectsRef}>
       <div
         id="projectsDiv"
-        className="text-center pt-20 lg:pt-24 w-full space-y-4"
+        className="text-center pt-20 lg:pt-24 w-full "
       >
         <Heading text='Wondering what I could do?' />
-        <p className="text-body-white lg:text-center lg:text-lg mt-2 lg:mt-4">Here are some of my projects:</p>
+        <p className="text-body-white lg:text-center lg:text-lg mt-8">Here are some of my projects:</p>
         {/* TODO:
               Use laptop illustration and animations to showcase projects
               Use a laptop frame.
               Projects should display inside the frame
               Either a slider or scroll animation
           */}
-        <div className="w-full grid md:grid-cols-2 lg:grid-cols-3 gap-8 mt-16">
+        <div className="w-full h-full grid md:grid-cols-2 lg:grid-cols-3 gap-8 mt-8">
 
           {/* Project */}
           <ProjectCard
