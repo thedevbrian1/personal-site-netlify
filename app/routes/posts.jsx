@@ -12,7 +12,7 @@ export default function Posts() {
     return (
         <main className="text-gray-300 mt-20 py-16 px-6 xl:px-0 lg:max-w-2xl mx-auto">
             <h1 className="font-bold text-4xl">Articles</h1>
-            <ul className="mt-8">
+            <ul className="mt-8 space-y-4">
                 {posts.map(post => (
                     <PostCard
                         key={post._id}
@@ -35,7 +35,7 @@ function PostCard({ href, title, description, imgSrc, createdAt }) {
             prefetch="intent"
             className="grid md:grid-cols-3 bg-brand-alt-blue rounded-lg hover:outline hover:outline-1  hover:outline-[#feb465] transition ease-in-out duration-300"
         >
-            <img src={imgSrc} alt="" className="w-full h-52 object-cover md:col-span-1 p-4 rounded-lg" />
+            <img src={`${imgSrc}?w=295&auto=format&fit=crop`} alt="" className="w-full h-52 object-cover md:col-span-1 p-4 rounded-lg" />
             <div className="md:col-span-2 p-6">
                 <h2 className="font-semibold text-lg lg:text-xl">{title}</h2>
                 <p className="mt-2"><time dateTime={new Date(createdAt)}>

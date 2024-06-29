@@ -42,7 +42,11 @@ const components = {
                 return null;
             }
             let { url } = value;
-            return <ReactPlayer url={url} />
+            return (
+                <div className='aspect-video'>
+                    <ReactPlayer url={url} width='100%' height='100%' />
+                </div>
+            )
         }
     },
     block: {
@@ -118,7 +122,7 @@ function Code({ value }) {
 export default function Post() {
     const post = useLoaderData();
 
-    // return <></>;
+    // FIXME: Fix FOUC in production and hydration errors
     return (
         <main className='mt-20 py-16 px-6  max-w-3xl 2xl:max-w-3xl mx-auto text-gray-300'>
             <div className='ml-2 md:ml-6'>
@@ -139,7 +143,7 @@ export default function Post() {
                     </time> -- 2 min read
                     </p>
                 </div>
-                <img src={post[0].mainImage?.asset.url} alt={post[0].altText} className='aspect-video w-full object-cover' />
+                <img src={`${post[0].mainImage?.asset.url}?w=640&auto=format&fit=crop`} alt={post[0].altText} className='aspect-video w-full object-cover' />
                 <div className='px-2 md:px-6'>
                     <PortableText value={post[0].body} components={components} />
                 </div>
