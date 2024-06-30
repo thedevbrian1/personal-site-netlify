@@ -1,4 +1,4 @@
-import { Link, useFetcher } from "@remix-run/react";
+import { Link, useFetcher, useLoaderData } from "@remix-run/react";
 import { useRef, useEffect } from "react";
 import { gsap } from "gsap";
 import { motion } from "framer-motion";
@@ -14,6 +14,7 @@ import { honeypot } from "../.server/honeypot";
 import { HoneypotInputs } from "remix-utils/honeypot/react";
 import { HoneypotProvider } from "remix-utils/honeypot/react";
 import { SpamError } from "remix-utils/honeypot/server";
+import { getProjects } from "~/models/project";
 
 export const meta = () => {
   return [
@@ -25,6 +26,10 @@ export const meta = () => {
 // export function headers() {
 //   return { 'Cache-Control': 'max-age=259200' };
 // }
+export async function loader() {
+  let projects = await getProjects();
+  return projects;
+}
 
 export async function action({ request }) {
   const formData = await request.formData();
@@ -210,6 +215,9 @@ function About() {
 
 function Projects() {
   gsap.registerPlugin(ScrollTrigger);
+
+  let projects = useLoaderData();
+
   const projectsRef = useRef(null);
 
   useEffect(() => {
@@ -241,67 +249,15 @@ function Projects() {
           */}
         <div className="w-full h-full grid md:grid-cols-2 lg:grid-cols-3 gap-8 mt-8">
 
-          {/* Project */}
-          <ProjectCard
-            imageUrl={'/wonderland.png'}
-            alt={'A screenshot of the Wonderland Aventura website home page'}
-            title={'Wonderland Aventura'}
-            projectUrl={'https://wonderland-n1o4.vercel.app/'}
-          />
-          <ProjectCard
-            imageUrl={'/jbmotors.png'}
-            alt={'A screenshot of JB Motors Limited website home page'}
-            title={'JB Motors Ltd'}
-            projectUrl={'https://www.jbmotorsltd.com/'}
-          />
-          <ProjectCard
-            imageUrl={'/wakadinali.png'}
-            alt={'A screenshot of Wakadinali website home page'}
-            title={'Wakadinali'}
-            projectUrl={'https://wakadinali.netlify.app'}
-          />
-
-          <ProjectCard
-            imageUrl={'/nifty.png'}
-            alt={'A screenshot of Paragon e-School home page'}
-            title={'Paragon e-School'}
-            projectUrl={'https://paragoneschool.com/'}
-          />
-
-          <ProjectCard
-            imageUrl={'/organiczones.png'}
-            alt={'A screenshot of organic zones home page'}
-            title={'Organic zones'}
-            projectUrl={'https://organiczones.co.ke/'}
-          />
-
-          <ProjectCard
-            imageUrl={'/netcom.png'}
-            alt={'A screenshot of Netcom website home page'}
-            title={'Netcom'}
-            projectUrl={'https://www.netcomss.com/'}
-          />
-          {/* Project */}
-          <ProjectCard
-            imageUrl={'/restaurant.png'}
-            alt={'A screenshot of a fancy restaurant website home page'}
-            title={'Restaurant'}
-            projectUrl={'https://glittery-clafoutis-7de171.netlify.app'}
-          />
-
-          <ProjectCard
-            imageUrl={'/got.png'}
-            alt={'A screenshot of Game of Thrones quiz app home page'}
-            title={'Game of Thrones quiz app'}
-            projectUrl={'https://got-quiz-app.netlify.app/'}
-          />
-
-          <ProjectCard
-            imageUrl={'/kelectricals.png'}
-            alt='A screenshot of Kihara Electricals home page'
-            title='Kihara Electricals'
-            projectUrl='https://kihara-electricals.netlify.app/'
-          />
+          {projects.map((project) => (
+            <ProjectCard
+              key={project._id}
+              imageUrl={project.image.asset.url}
+              alt={project.altText}
+              title={project.title}
+              projectUrl={project.projectUrl}
+            />
+          ))}
         </div>
       </div>
     </section>
