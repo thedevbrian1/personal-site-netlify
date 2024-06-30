@@ -11,6 +11,7 @@ export default function Nav({ navLinks }) {
 
     return (
         <nav>
+            {/* Desktop menu */}
             <ul className="text-white hidden lg:flex gap-6">
                 {navLinks.map((navLink) => (
                     <li key={navLink.id} className="hover:text-orange-400 transition duration-300 ease-in-out">
@@ -20,6 +21,8 @@ export default function Nav({ navLinks }) {
                     </li>
                 ))}
             </ul>
+
+            {/* Mobile menu */}
             <div className="lg:hidden">
                 <MenuIcon toggleMenu={toggleMenu} />
                 {
@@ -28,10 +31,11 @@ export default function Nav({ navLinks }) {
                             <span className="absolute top-8 right-6">
                                 <XIcon toggleMenu={toggleMenu} />
                             </span>
-                            <ul className='list-none text-center mr-4 text-white'>
-                                {navLinks.map((navLink) => (
+                            <ul className='list-none text-center mr-4 text-white space-y-4'>
+                                {navLinks.map((navLink, index) => (
                                     <li
-                                        className='text-xl'
+                                        className='text-xl menu-item'
+                                        style={{ animationDelay: `${index * 0.1}s` }}
                                         key={navLink.id}
                                         onClick={() => setIsMenuShowing(false)}
                                     >
