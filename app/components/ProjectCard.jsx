@@ -1,6 +1,6 @@
 export default function ProjectCard({ imageUrl, alt, title, projectUrl }) {
     return (
-        <div className="relative  group">
+        <div className="relative group fade-in">
             <div className="absolute -inset-0.5 hover:-inset-1 transition duration-1000 group-hover:duration-200 ease-in-out bg-[#c31432] blur opacity-75 group-hover:opacity-100 rounded-xl"></div>
 
             <div className="relative w-full bg-slightly-lighter-dark-blue p-2 rounded-xl">

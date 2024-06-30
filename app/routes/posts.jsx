@@ -10,7 +10,7 @@ export async function loader() {
 export default function Posts() {
     const posts = useLoaderData();
     return (
-        <main className="text-gray-300 mt-20 py-16 px-6 xl:px-0 lg:max-w-2xl mx-auto">
+        <main className="text-gray-300 mt-20 py-16 px-6 xl:px-0 md:max-w-2xl mx-auto">
             <h1 className="font-bold text-4xl">Articles</h1>
             <ul className="mt-8 space-y-4">
                 {posts.map(post => {
@@ -43,7 +43,7 @@ function PostCard({ href, title, description, imgSrc, createdAt, prefetchImage }
             onMouseEnter={prefetchImage}
             onFocus={prefetchImage}
             unstable_viewTransition
-            className="grid md:grid-cols-3 bg-brand-alt-blue rounded-lg hover:outline hover:outline-1  hover:outline-[#feb465] transition ease-in-out duration-300"
+            className="grid md:grid-cols-3 bg-brand-alt-blue rounded-lg hover:outline hover:outline-1  hover:outline-[#feb465] transition ease-in-out duration-300 opacity-0 fade-in"
         >
             <img src={`${imgSrc}?w=295&auto=format&fit=crop`} alt="" className="w-full h-52 object-cover md:col-span-1 p-4 rounded-lg" />
             <div className="md:col-span-2 p-6">

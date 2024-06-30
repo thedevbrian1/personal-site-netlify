@@ -17,6 +17,7 @@ import { ScrollTrigger } from "gsap/dist/ScrollTrigger";
 
 
 import "./styles/tailwind.css";
+import "./styles/animation.css";
 import Nav from "./components/Nav";
 import { ArrowLeftIcon, Bars, ErrorIcon, Facebook, LinkedIn, Twitter } from "./components/Icon";
 import Input from "./components/Input";
@@ -29,6 +30,7 @@ import { SpamError } from "remix-utils/honeypot/server";
 import { useSpinDelay } from "spin-delay";
 import { badRequest, validateEmail } from "./.server/validation";
 import { addContactToList, createContact } from "./.server/email";
+import { FormSpacer } from "./components/FormSpacer";
 
 export async function loader() {
   return json({ honeypotInputProps: honeypot.getInputProps() });
@@ -151,40 +153,17 @@ export default function App() {
 
 function Footer() {
   const fetcher = useFetcher();
-  gsap.registerPlugin(ScrollTrigger);
-
-  const footerRef = useRef(null);
-
-  // function handleHover() {
-  //   gsap.to("#subscribeBtn", {
-  //     backgroundColor: '#c94b4b'
-  //   });
-  // }
-
-  useEffect(() => {
-    let ctx = gsap.context(() => {
-      gsap.from("#footer", {
-        opacity: 0,
-        y: 20,
-        duration: 1,
-        scrollTrigger: "#footer"
-      });
-    }, footerRef);
-    return ctx.revert();
-  }, []);
 
   return (
-    <footer ref={footerRef} className="relative">
+    <footer className="relative">
       <div className="w-36 h-36 lg:w-44 lg:h-44 absolute -left-20 lg:-left-36 top-10 bg-brand-orange blur-3xl bg-opacity-20 rounded-full" />
       <div
         id="footer"
-        className="w-4/5 xl:max-w-5xl mx-auto mt-16"
+        className="px-6 md:px-12 xl:px-0 xl:max-w-5xl mx-auto mt-16 md:mt-32"
       >
         <div className="flex justify-between">
           <h2 className="font-heading text-white uppercase">Brian Mwangi</h2>
           <div className="flex gap-3">
-            {/* <img src="/twitter.svg" alt="Twitter icon" />
-              <img src="/facebook.svg" alt="Facebook icon" /> */}
             <a href="https://www.linkedin.com/in/brian-mwangi-9b01651a1/" target="_blank" rel="noopener noreferrer" >
               <LinkedIn />
             </a>
@@ -196,71 +175,48 @@ function Footer() {
             </a>
           </div>
         </div>
-        <div className="bg-slightly-lighter-dark-blue rounded-xl border border-slate-500 mt-10 px-5 md:px-8 py-10 grid lg:grid-cols-2 gap-5">
-          <div className="lg:self-center">
-            <h2 className="text-white font-heading font-bold text-xl lg:text-3xl">Sign up for the newsletter</h2>
-            <p className="font-body text-body-white lg:text-lg mt-2 lg:mt-4">Receive interesting tips and articles in real time. You can unsubscribe at any time.</p>
-          </div>
-          <div className="md:w-3/4 lg:w-auto">
-            <fetcher.Form method="post" className="xl:max-w-sm">
-              <HoneypotInputs />
-              <fieldset className="grid gap-3">
-                <div>
-                  <label htmlFor="subscribe" className="text-body-white">
-                    Email
-                    {(fetcher.data?.fieldErrors)
-                      ? (<span className="text-red-500 ml-2">{fetcher.data?.fieldErrors?.email}</span>)
-                      : <>&nbsp;</>
-                    }
-                  </label>
-                  {/* <input
-                    type="email"
-                    name="email"
-                    id="subscribe"
-                    className="w-full xl:max-w-sm block bg-transparent border border-orange-300 rounded-lg p-2 text-body-white"
-                  /> */}
-                  {/* <input
-                    type="text"
-                    name="email"
-                    id="subscribe"
-                    placeholder="johndoe@gmail.com"
-                    className="nm-inset-slightly-lighter-dark-blue border-none outline-none w-full xl:max-w-sm block rounded-lg  text-body-white"
-                  /> */}
-                  <Input
-                    type='email'
-                    name='email'
-                    id='subscribe'
-                    placeholder='johndoe@gmail.com'
-                  />
-                </div>
-                {/* <div className="relative max-w-sm group">
-                  <div className="absolute inset-0 bg-gradient-to-r from-[#f12711] to-[#f5af19] group-hover:bg-gradient-to-r group-hover:from-[#f5af19] group-hover:to-[#f12711] transition ease-in-out duration-5000 blur opacity-75 rounded-lg" />
+        <div className="bg-slightly-lighter-dark-blue rounded-xl border border-slate-500 mt-10">
+          <div className="grid md:grid-cols-2 gap-5 px-5 py-10">
+            <div className="lg:self-center opacity-0 fade-in">
+              <h2 className="text-white font-heading font-bold text-xl lg:text-3xl">Sign up for the newsletter</h2>
+              <p className="font-body text-body-white lg:text-lg mt-2 lg:mt-4">Receive interesting tips and articles in real time. You can unsubscribe at any time.</p>
+            </div>
+            <div className="md:w-3/4 lg:w-auto opacity-0 fade-in">
+              <fetcher.Form method="post" className="xl:max-w-sm">
+                <HoneypotInputs />
+                <fieldset className="grid gap-3">
+                  <FormSpacer>
+                    <label htmlFor="subscribe" className="text-body-white">
+                      Email
+                      {(fetcher.data?.fieldErrors)
+                        ? (<span className="text-red-500 ml-2">{fetcher.data?.fieldErrors?.email}</span>)
+                        : <>&nbsp;</>
+                      }
+                    </label>
+
+                    <Input
+                      type='email'
+                      name='email'
+                      id='subscribe'
+                      placeholder='johndoe@gmail.com'
+                    />
+                  </FormSpacer>
 
                   <button
+                    id="subscribeBtn"
                     type="submit"
                     name="_action"
                     value="subscribe"
-                    className="relative bg-dark-blue w-full py-2 px-auto rounded-lg font-bold lg:text-lg text-white">
+                    // onMouseEnter={handleHover}
+                    className=" bg-gradient-to-r from-[#c94b4b] to-[#4b134f] hover:bg-gradient-to-r hover:from-[#4b134f] hover:to-[#c94b4b] transition ease-in-out duration-200 w-full py-3 px-auto  rounded-lg font-bold lg:text-lg text-white group">
                     {(fetcher.submission)
                       ? 'Subscribing...'
                       : 'Subscribe'
                     }
                   </button>
-                </div> */}
-                <button
-                  id="subscribeBtn"
-                  type="submit"
-                  name="_action"
-                  value="subscribe"
-                  // onMouseEnter={handleHover}
-                  className=" bg-gradient-to-r from-[#c94b4b] to-[#4b134f] hover:bg-gradient-to-r hover:from-[#4b134f] hover:to-[#c94b4b] transition ease-in-out duration-200 w-full py-3 px-auto  rounded-lg font-bold lg:text-lg text-white group">
-                  {(fetcher.submission)
-                    ? 'Subscribing...'
-                    : 'Subscribe'
-                  }
-                </button>
-              </fieldset>
-            </fetcher.Form>
+                </fieldset>
+              </fetcher.Form>
+            </div>
           </div>
         </div>
       </div>

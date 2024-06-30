@@ -147,7 +147,7 @@ export default function Post() {
                     </p>
                 </div>
                 <img src={`${post[0].mainImage?.asset.url}?w=640&auto=format&fit=crop`} alt={post[0].altText} className='aspect-video w-full object-cover' />
-                <div className='px-2 md:px-6'>
+                <div className='px-2 md:px-6 fade-in'>
                     <PortableText value={post[0].body} components={components} />
                 </div>
             </article>
