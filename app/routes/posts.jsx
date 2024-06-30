@@ -1,4 +1,4 @@
-import { Link, isRouteErrorResponse, useLoaderData, useRouteError } from "@remix-run/react";
+import { Link, NavLink, isRouteErrorResponse, useLoaderData, useRouteError } from "@remix-run/react";
 import { getPosts } from "../models/post.server"
 import { ArrowLeftIcon, ErrorIcon } from "../components/Icon";
 
@@ -13,26 +13,36 @@ export default function Posts() {
         <main className="text-gray-300 mt-20 py-16 px-6 xl:px-0 lg:max-w-2xl mx-auto">
             <h1 className="font-bold text-4xl">Articles</h1>
             <ul className="mt-8 space-y-4">
-                {posts.map(post => (
-                    <PostCard
-                        key={post._id}
-                        href={post.slug.current}
-                        title={post.title}
-                        description={post.description}
-                        imgSrc={post.mainImage?.asset.url}
-                        createdAt={post.formattedCreatedAt}
-                    />
-                ))}
+                {posts.map(post => {
+                    function prefetchImage() {
+                        let img = new Image();
+                        img.src = `${post.mainImage?.asset.url}?w=640&auto=format&fit=crop`
+                    }
+                    return (
+                        <PostCard
+                            key={post._id}
+                            href={post.slug.current}
+                            title={post.title}
+                            description={post.description}
+                            imgSrc={post.mainImage?.asset.url}
+                            createdAt={post.formattedCreatedAt}
+                            prefetchImage={prefetchImage}
+                        />
+                    );
+                })}
             </ul>
         </main>
     );
 }
 
-function PostCard({ href, title, description, imgSrc, createdAt }) {
+function PostCard({ href, title, description, imgSrc, createdAt, prefetchImage }) {
     return (
-        <Link
+        <NavLink
             to={href}
             prefetch="intent"
+            onMouseEnter={prefetchImage}
+            onFocus={prefetchImage}
+            unstable_viewTransition
             className="grid md:grid-cols-3 bg-brand-alt-blue rounded-lg hover:outline hover:outline-1  hover:outline-[#feb465] transition ease-in-out duration-300"
         >
             <img src={`${imgSrc}?w=295&auto=format&fit=crop`} alt="" className="w-full h-52 object-cover md:col-span-1 p-4 rounded-lg" />
@@ -44,7 +54,7 @@ function PostCard({ href, title, description, imgSrc, createdAt }) {
                 </p>
                 <p className="mt-4 text-gray-400">{description}</p>
             </div>
-        </Link>
+        </NavLink>
     );
 }
 
