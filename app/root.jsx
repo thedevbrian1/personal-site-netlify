@@ -12,16 +12,9 @@ import {
   useNavigation,
   useRouteError,
 } from "@remix-run/react";
-import { gsap } from "gsap";
-import { ScrollTrigger } from "gsap/dist/ScrollTrigger";
-
-
-import "./styles/tailwind.css";
-import "./styles/animation.css";
 import Nav from "./components/Nav";
 import { ArrowLeftIcon, Bars, ErrorIcon, Facebook, LinkedIn, Twitter } from "./components/Icon";
 import Input from "./components/Input";
-import { useEffect, useRef } from "react";
 import { redirect } from "@remix-run/node";
 import { honeypot } from "./.server/honeypot";
 import { HoneypotInputs } from "remix-utils/honeypot/react";
@@ -31,6 +24,8 @@ import { useSpinDelay } from "spin-delay";
 import { badRequest, validateEmail } from "./.server/validation";
 import { addContactToList, createContact } from "./.server/email";
 import { FormSpacer } from "./components/FormSpacer";
+import "./styles/tailwind.css";
+import "./styles/animation.css";
 
 export async function loader() {
   return json({ honeypotInputProps: honeypot.getInputProps() });
