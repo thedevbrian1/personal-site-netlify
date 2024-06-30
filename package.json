@@ -28,7 +28,8 @@
     "react-lowlight": "^3.0.0",
     "react-player": "^2.16.0",
     "remix-utils": "^7.5.0",
-    "source-map-support": "^0.5.21"
+    "source-map-support": "^0.5.21",
+    "spin-delay": "^2.0.0"
   },
   "devDependencies": {
     "@remix-run/dev": "^2.9.2",

@@ -9,6 +9,7 @@ import {
   json,
   useFetcher,
   useLoaderData,
+  useNavigation,
   useRouteError,
 } from "@remix-run/react";
 import { gsap } from "gsap";
@@ -17,7 +18,7 @@ import { ScrollTrigger } from "gsap/dist/ScrollTrigger";
 
 import "./styles/tailwind.css";
 import Nav from "./components/Nav";
-import { ArrowLeftIcon, ErrorIcon, Facebook, LinkedIn, Twitter } from "./components/Icon";
+import { ArrowLeftIcon, Bars, ErrorIcon, Facebook, LinkedIn, Twitter } from "./components/Icon";
 import Input from "./components/Input";
 import { useEffect, useRef } from "react";
 import { redirect } from "@remix-run/node";
@@ -25,6 +26,7 @@ import { honeypot } from "./.server/honeypot";
 import { HoneypotInputs } from "remix-utils/honeypot/react";
 import { HoneypotProvider } from "remix-utils/honeypot/react";
 import { SpamError } from "remix-utils/honeypot/server";
+import { useSpinDelay } from "spin-delay";
 import { badRequest, validateEmail } from "./.server/validation";
 import { addContactToList, createContact } from "./.server/email";
 
@@ -69,6 +71,13 @@ export async function action({ request }) {
 export function Layout({ children }) {
   let { honeypotInputProps } = useLoaderData();
 
+  let navigation = useNavigation();
+  let isLoading = navigation.state === 'loading' && !navigation.formMethod;
+
+  let showLoadingState = useSpinDelay(isLoading, {
+    delay: 150,
+    minDuration: 500
+  });
   const navLinks = [
     {
       name: 'Home',
@@ -108,6 +117,12 @@ export function Layout({ children }) {
         <Links />
       </head>
       <body className="w-full bg-dark-blue">
+        {showLoadingState
+          ? <div className="w-full fixed z-10 grid place-items-center inset-0 bg-black/50">
+            <span className="w-14 h-14 md:w-16 md:h-16"><Bars /></span>
+          </div>
+          : null
+        }
         <header className="flex justify-between items-center absolute top-0 left-0 right-0 z-10 pt-8 px-6 lg:pl-12 lg:pr-16">
           {/* 
             TODO:
