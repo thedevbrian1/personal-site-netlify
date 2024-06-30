@@ -1,5 +1,8 @@
+import Mailjet from 'node-mailjet';
+import { Resend } from "resend";
+
 export async function createContact(email) {
-    const Mailjet = require('node-mailjet');
+    // const Mailjet = require('node-mailjet');
     const mailjet = Mailjet.apiConnect(process.env.MJ_APIKEY_PUBLIC, process.env.MJ_APIKEY_PRIVATE);
 
     let res = null;
@@ -18,7 +21,7 @@ export async function createContact(email) {
 }
 
 export async function addContactToList(contactEmail) {
-    const Mailjet = require('node-mailjet');
+    // const Mailjet = require('node-mailjet');
     const mailjet = Mailjet.apiConnect(process.env.MJ_APIKEY_PUBLIC, process.env.MJ_APIKEY_PRIVATE);
 
     try {
@@ -37,35 +40,58 @@ export async function addContactToList(contactEmail) {
     }
 }
 
-export async function sendEmail({ name, email, message }) {
-    const Mailjet = require('node-mailjet');
-    const mailjet = Mailjet.apiConnect(process.env.MJ_APIKEY_PUBLIC, process.env.MJ_APIKEY_PRIVATE);
+// export async function sendEmail({ name, email, message }) {
+//     // const Mailjet = require('node-mailjet');
+//     const mailjet = Mailjet.apiConnect(process.env.MJ_APIKEY_PUBLIC, process.env.MJ_APIKEY_PRIVATE);
 
-    try {
-        const res = await mailjet
-            .post("send", { 'version': 'v3' })
-            .request({
-                "FromEmail": "brayomwas95@gmail.com",
-                "FromName": "thedevbrian Website",
-                "Recipients": [
-                    {
-                        "Email": "mwangib041@gmail.com",
-                        "Name": "Brian Mwangi"
-                    }
-                ],
-                "Subject": "Test email",
-                "Text-part": "This is the text part of this email",
-                "Html-part": `
-            <h3>Message from website</h3>
-            <p>${message}</p>
-            <p>Here are my contact details: </p>
-            <p>Name: ${name} </p>
-            <p>Email: ${email} </p>
-            `
-            });
-        console.log('Email response: ', res.body);
-    } catch (err) {
-        throw new Response(err, { status: err.statusCode })
+//     try {
+//         const res = await mailjet
+//             .post("send", { 'version': 'v3' })
+//             .request({
+//                 "FromEmail": "bhello@brianmwangi.co.ke",
+//                 "FromName": "thedevbrian Website",
+//                 "Recipients": [
+//                     {
+//                         "Email": "mwangib041@gmail.com",
+//                         "Name": "Brian Mwangi"
+//                     }
+//                 ],
+//                 "Subject": "Test email",
+//                 "Text-part": "This is the text part of this email",
+//                 "Html-part": `
+//             <h3>Message from website</h3>
+//             <p>${message}</p>
+//             <p>Here are my contact details: </p>
+//             <p>Name: ${name} </p>
+//             <p>Email: ${email} </p>
+//             `
+//             });
+//         console.log('Email response: ', res.body);
+//     } catch (err) {
+//         throw new Response(err, { status: err.statusCode })
+//     }
+
+// }
+
+export async function sendEmail(name, email, phone, message) {
+    let resend = new Resend(process.env.RESEND_API_KEY);
+    let { data, error } = await resend.emails.send({
+        from: process.env.FROM_EMAIL,
+        to: [process.env.TO_EMAIL],
+        subject: "Message from Brian Mwangi contact form",
+        html: `<div>
+                    <p>Hi, I contacted you from Brian Mwangi website. Here are my details:</p>
+                    <p>Name: ${name}</p>
+                    <p>Email: ${email}</p>
+                    <p>Phone: ${phone}</p>
+                    <p>Message: ${message}</p>
+                </div>
+                `
+    });
+
+    if (error) {
+        throw new Error(error);
     }
 
+    return data;
 }

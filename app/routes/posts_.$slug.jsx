@@ -159,7 +159,7 @@ export function ErrorBoundary() {
     const error = useRouteError();
 
     if (isRouteErrorResponse(error)) {
-        console.log({ error });
+        console.error({ error });
         return (
             <div className='w-full h-screen flex justify-center items-center'>
                 <div className='flex flex-col items-center gap-4 text-gray-300'>
@@ -167,12 +167,12 @@ export function ErrorBoundary() {
                         <ErrorIcon />
                     </div>
                     <h1 className='font-semibold text-3xl text-red-500'>{error.status} {error.statusText}</h1>
-                    <Link to="/posts" className='px-4 py-2 rounded flex gap-1 text-white bg-gradient-to-r from-[#c94b4b] to-[#4b134f] hover:bg-gradient-to-r hover:from-[#4b134f] hover:to-[#c94b4b]'><ArrowLeftIcon /> Back to articles</Link>
+                    <Link to="." prefetch='intent' className='px-4 py-2 rounded flex gap-1 text-white bg-gradient-to-r from-[#c94b4b] to-[#4b134f] hover:bg-gradient-to-r hover:from-[#4b134f] hover:to-[#c94b4b]'>Try again</Link>
                 </div>
             </div>
         );
     } else if (error instanceof Error) {
-        console.log({ error });
+        console.error({ error });
         return (
             <div className='w-full h-screen flex justify-center items-center'>
                 <div className='flex flex-col items-center gap-4 px-6 xl:px-0'>
@@ -180,7 +180,7 @@ export function ErrorBoundary() {
                         <ErrorIcon />
                     </div>
                     <h1 className='text-red-500 text-3xl'>Error fetching post</h1>
-                    <Link to="/posts" className='px-4 py-2 rounded flex gap-1 text-white bg-gradient-to-r from-[#c94b4b] to-[#4b134f] hover:bg-gradient-to-r hover:from-[#4b134f] hover:to-[#c94b4b]'><ArrowLeftIcon /> Back to articles</Link>
+                    <Link to="." prefetch='intent' className='px-4 py-2 rounded flex gap-1 text-white bg-gradient-to-r from-[#c94b4b] to-[#4b134f] hover:bg-gradient-to-r hover:from-[#4b134f] hover:to-[#c94b4b]'>Try again</Link>
                 </div>
             </div>
         );

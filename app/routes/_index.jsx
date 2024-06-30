@@ -1,10 +1,10 @@
-import { Link, useFetcher, useLoaderData } from "@remix-run/react";
+import { Link, isRouteErrorResponse, useFetcher, useLoaderData, useRouteError } from "@remix-run/react";
 import { redirect } from "@remix-run/node";
 import Heading from "../components/Heading";
 import Input from "../components/Input";
-import { badRequest, validateEmail, validateMessage, validateName } from "../.server/validation";
+import { badRequest, trimValue, validateEmail, validateMessage, validateName, validatePhone } from "../.server/validation";
 import { sendEmail } from "../.server/email";
-import { ArrowLeftIcon, ErrorIcon } from "../components/Icon";
+import { ErrorIcon, ThreeDots } from "../components/Icon";
 import ProjectCard from "../components/ProjectCard";
 import { honeypot } from "../.server/honeypot";
 import { HoneypotInputs } from "remix-utils/honeypot/react";
@@ -45,12 +45,17 @@ export async function action({ request }) {
   if (action === 'contact') {
     // Send email
     const name = formData.get('name');
+    let phone = formData.get('phone');
     const email = formData.get('email');
     const message = formData.get('message');
 
     const fields = { name, email, message };
+
+    let trimmedPhone = trimValue(phone);
+
     const fieldErrors = {
       name: validateName(name),
+      phone: validatePhone(trimmedPhone),
       email: validateEmail(email),
       message: validateMessage(message)
     };
@@ -59,15 +64,12 @@ export async function action({ request }) {
     if (Object.values(fieldErrors).some(Boolean)) {
       return badRequest({ fieldErrors, fields });
     }
-    let emailObj = {
-      name,
-      email,
-      message
-    };
 
-    await sendEmail(emailObj);
+    let { id } = await sendEmail(name, email, trimmedPhone, message);
 
-    return redirect('/success');
+    if (id) {
+      return redirect('/success');
+    }
   }
 
   return null;
@@ -131,13 +133,13 @@ function About() {
         <div className="grid lg:grid-cols-2 gap-8 md:gap-16 lg:gap-36 items-center py-5 lg:py-10">
           <div className="px-5 md:px-8 lg:px-12 pt-6 fade-in">
             <Heading text='About me' />
-            <p className="text-body-white lg:text-lg mt-2 lg:mt-4">
+            <p className="text-body-white lg:text-lg mt-4 lg:mt-8">
               I am a web developer based in Nairobi, Kenya. I help my clients improve their online presence by building them fantastic websites with great SEO.
             </p>
             <p className="text-body-white lg:text-lg mt-2 ">
               I like to work out and solve puzzles when I'm not coding🙂
             </p>
-            <h3 className="font-semibold font-heading text-body-white text-lg mt-2 lg:mt-4">Education</h3>
+            <h3 className="font-semibold font-heading text-body-white text-lg mt-4">Education</h3>
             <p className="text-body-white lg:text-lg  mt-2">I graduated with a Bachelor's degree in Computer Science from Jomo Kenyatta University of Agriculture and Technology.</p>
           </div>
           <div className="justify-self-center px-4 lg:px-0">
@@ -186,9 +188,8 @@ function Projects() {
 
 
 function ContactForm() {
-  // const actionData = useActionData();
-  // const transition = useTransition();
   const fetcher = useFetcher();
+  let isSubmitting = fetcher.state !== 'idle';
 
   return (
     <section
@@ -200,30 +201,29 @@ function ContactForm() {
           <div className="md:self-center fade-in">
             {/* Text */}
             <Heading text="Get in touch with me" />
-            <p className="font-body text-body-white lg:text-lg mt-2 lg:mt-4">
+            <p className="font-body text-body-white lg:text-lg mt-4">
               I'd like to hear from you
             </p>
-            <div className="flex gap-5 items-end py-2">
+            <div className="flex gap-5 items-center py-2 mt-4">
               <div
                 id="mobile"
-                className="w-7 h-7 lg:w-8 lg:h-8"
+                className="w-16 h-16"
               >
                 <img
                   src="/phone.svg"
                   alt="Mobile phone handcraft"
-                  width="100%"
-                  height="100%"
-                  className="-rotate-12"
+                  className="-rotate-12 w-full h-full"
                 />
               </div>
               <span className="font-heading font-bold text-body-white">0710 162 152</span>
             </div>
           </div>
-          <div className="lg:px-2">
+          <div className="lg:px-2 ">
             {/* Form */}
             <fetcher.Form method="post" className="xl:max-w-sm fade-in">
               <HoneypotInputs />
-              <fieldset className="grid gap-3">
+              <h3 className="font-heading font-semibold text-white text-xl">Send me a message</h3>
+              <fieldset className="space-y-3 mt-4">
                 <FormSpacer>
                   <label htmlFor="name" className="text-body-white">
                     Name
@@ -232,18 +232,27 @@ function ContactForm() {
                       : <>&nbsp;</>
                     }
                   </label>
-                  {/* <input
-                  type="text"
-                  name="name"
-                  id="name"
-                  className="border border-brand-orange rounded-lg w-full p-2 text-body-white bg-transparent"
-                /> */}
                   <Input
                     // ref={nameRef}
                     type='text'
                     name='name'
                     id='name'
                     placeholder='John Doe'
+                  />
+                </FormSpacer>
+                <FormSpacer>
+                  <label htmlFor="phone" className="text-body-white">
+                    Phone
+                    {fetcher.data?.fieldErrors?.phone
+                      ? (<span className="text-red-500 ml-2">{fetcher.data.fieldErrors.phone}</span>)
+                      : <>&nbsp;</>
+                    }
+                  </label>
+                  <Input
+                    type="text"
+                    name="phone"
+                    id="phone"
+                    placeholder="+254 712 345 678"
                   />
                 </FormSpacer>
                 <FormSpacer>
@@ -254,12 +263,6 @@ function ContactForm() {
                       : <>&nbsp;</>
                     }
                   </label>
-                  {/* <input
-                  type="email"
-                  name="email"
-                  id="email"
-                  className="border border-brand-orange rounded-lg w-full p-2 text-body-white bg-transparent"
-                /> */}
                   <Input
                     type='email'
                     name='email'
@@ -284,18 +287,15 @@ function ContactForm() {
                   // className="w-full xl:max-w-sm bg-transparent rounded-lg block text-body-white focus:border-none focus:ring-2 focus:ring-white"
                   />
                 </FormSpacer>
-
-                {/* <div className="relative max-w-sm group ">
-                <div className="absolute inset-0 bg-gradient-to-r from-[#f12711] to-[#f5af19] group-hover:bg-gradient-to-r group-hover:from-[#f5af19] group-hover:to-[#f12711] transition ease-in-out duration-5000 blur opacity-75 rounded-lg" />
-
-              </div> */}
+                {/* FIXME: Fix button size when submitting */}
                 <button
                   type="submit"
                   name="_action"
                   value="contact"
-                  className=" bg-gradient-to-r from-[#c94b4b] to-[#4b134f] hover:bg-gradient-to-r hover:from-[#4b134f] hover:to-[#c94b4b] transition ease-in-out duration-200 w-full py-3 px-auto  rounded-lg font-bold lg:text-lg text-white group">
-                  {(fetcher.submission)
-                    ? 'Submitting...'
+                  className="bg-gradient-to-r from-[#c94b4b] to-[#4b134f] hover:bg-gradient-to-r hover:from-[#4b134f] hover:to-[#c94b4b] transition ease-in-out duration-200 w-full flex justify-center py-3  rounded-lg font-bold lg:text-lg text-white"
+                >
+                  {isSubmitting
+                    ? (<div className="w-10"><ThreeDots /></div>)
                     : 'Submit'
                   }
                 </button>
@@ -313,7 +313,7 @@ export function ErrorBoundary() {
   const error = useRouteError();
 
   if (isRouteErrorResponse(error)) {
-    console.log({ error });
+    console.error({ error });
     return (
       <div className='w-full h-screen flex justify-center items-center'>
         <div className='flex flex-col items-center gap-4 text-gray-300'>
@@ -321,12 +321,12 @@ export function ErrorBoundary() {
             <ErrorIcon />
           </div>
           <h1 className='font-semibold text-3xl text-red-500'>{error.status} {error.statusText}</h1>
-          <Link to="/" className='px-4 py-2 rounded flex gap-1 text-white bg-gradient-to-r from-[#c94b4b] to-[#4b134f] hover:bg-gradient-to-r hover:from-[#4b134f] hover:to-[#c94b4b]'><ArrowLeftIcon /> Try again</Link>
+          <Link to="/" prefetch="intent" className='px-4 py-2 rounded text-white bg-gradient-to-r from-[#c94b4b] to-[#4b134f] hover:bg-gradient-to-r hover:from-[#4b134f] hover:to-[#c94b4b]'>Try again</Link>
         </div>
       </div>
     );
   } else if (error instanceof Error) {
-    console.log({ error });
+    console.error({ error });
     return (
       <div className='w-full h-screen flex justify-center items-center'>
         <div className='flex flex-col items-center gap-4 px-6 xl:px-0'>
@@ -334,7 +334,7 @@ export function ErrorBoundary() {
             <ErrorIcon />
           </div>
           <h1 className='text-red-500 text-3xl'>Error fetching data</h1>
-          <Link to="/" className='px-4 py-2 rounded flex gap-1 text-white bg-gradient-to-r from-[#c94b4b] to-[#4b134f] hover:bg-gradient-to-r hover:from-[#4b134f] hover:to-[#c94b4b]'><ArrowLeftIcon /> Try again</Link>
+          <Link to="/" prefetch="intent" className='px-4 py-2 rounded text-white bg-gradient-to-r from-[#c94b4b] to-[#4b134f] hover:bg-gradient-to-r hover:from-[#4b134f] hover:to-[#c94b4b]'>Try again</Link>
         </div>
       </div>
     );
