@@ -76,8 +76,13 @@ export async function action({ request }) {
 }
 
 export function Layout({ children }) {
-  let { honeypotInputProps } = useRouteLoaderData('root');
   let error = useRouteError();
+  let data = useRouteLoaderData('root');
+
+  let honeypotInputProps;
+  if (!error) {
+    honeypotInputProps = data.honeypotInputProps;
+  }
 
   let navigation = useNavigation();
   let isLoading = navigation.state === 'loading' && !navigation.formMethod;
@@ -86,6 +91,7 @@ export function Layout({ children }) {
     delay: 150,
     minDuration: 500
   });
+
   const navLinks = [
     {
       name: 'Home',
@@ -143,10 +149,14 @@ export function Layout({ children }) {
           </Link>
           <Nav navLinks={navLinks} />
         </header>
-        <HoneypotProvider {...honeypotInputProps}>
-          {children}
-          {!error && <Footer />}
-        </HoneypotProvider>
+        {error
+          ? children
+          : <HoneypotProvider {...honeypotInputProps}>
+            {children}
+            {<Footer />}
+          </HoneypotProvider>
+        }
+
         <ScrollRestoration />
         <Scripts />
       </body>
@@ -171,15 +181,30 @@ function Footer() {
         className="px-6 md:px-12 xl:px-0 xl:max-w-5xl mx-auto mt-16 md:mt-32"
       >
         <div className="flex justify-between">
-          <h2 className="font-heading text-white uppercase">Brian Mwangi</h2>
+          <h2 className="font-heading text-white uppercase">Social media</h2>
           <div className="flex gap-3">
-            <a href="https://www.linkedin.com/in/brian-mwangi-9b01651a1/" target="_blank" rel="noopener noreferrer" >
+            <a
+              href="https://www.linkedin.com/in/brian-mwangi-9b01651a1/"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Find me on LinkedIn"
+            >
               <LinkedIn />
             </a>
-            <a href="https://twitter.com/_3R14N_" target="_blank" rel="noopener noreferrer">
+            <a
+              href="https://twitter.com/_3R14N_"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Follow me on X"
+            >
               <Twitter />
             </a>
-            <a href="https://www.facebook.com/brayo.notnice" target="_blank" rel="noopener noreferrer">
+            <a
+              href="https://www.facebook.com/brayo.notnice"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Follow me on Facebook"
+            >
               <Facebook />
             </a>
           </div>

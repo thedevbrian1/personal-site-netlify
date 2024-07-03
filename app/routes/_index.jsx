@@ -95,7 +95,7 @@ function Hero() {
         >
           <div>
             {/* Text */}
-            <h2 className="font-heading font-bold text-white text-2xl lg:text-5xl">Hi, I'm Brian Mwangi. I build websites that <span className="text-brand-orange "><em>actually work</em></span></h2>
+            <h2 className="font-heading font-bold text-white text-2xl lg:text-5xl">Hi, I'm Brian Mwangi. I build websites that <em className="text-brand-orange ">actually work</em></h2>
             {/* TODO: Use text gradient */}
             <p className="text-body-white mt-3 lg:text-lg">Do you desire to have the<em className="text-brand-orange"> best </em> website you can possibly have?</p>
             <div className="mt-5 flex gap-6 items-center">
@@ -141,7 +141,7 @@ function About() {
             <p className="text-body-white lg:text-lg  mt-2">I graduated with a Bachelor's degree in Computer Science from Jomo Kenyatta University of Agriculture and Technology.</p>
           </div>
           <div className="justify-self-center px-4 lg:px-0">
-            <img src="/brian.jpg" className=" w-full md:max-w-xs h-full rounded-lg image-reveal" />
+            <img src="/brian.jpg" alt="An image of Brian Mwangi in a black coat and blue striped shirt smiling" className=" w-full md:max-w-xs h-full rounded-lg image-reveal" />
           </div>
         </div>
       </div>

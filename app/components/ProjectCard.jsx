@@ -18,7 +18,7 @@ export default function ProjectCard({ imageUrl, alt, title, projectUrl }) {
                         {title}
                     </h3>
                     <a href={projectUrl} target="_blank" rel="noopener noreferrer" className="ml-2 text-body-white underline hover:text-brand-orange transition duration-300 ease-in-out">
-                        View project
+                        View project <span className="sr-only">{title}</span>
                     </a>
                 </div>
             </div>
