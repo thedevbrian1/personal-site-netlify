@@ -40,8 +40,6 @@ export async function action({ request }) {
 
   const action = formData.get('_action');
 
-  // const res = await mailjet.get("listrecipient", { 'version': 'v3' }).request();
-  // console.log({ res });
   if (action === 'contact') {
     // Send email
     const name = formData.get('name');
@@ -287,7 +285,6 @@ function ContactForm() {
                   // className="w-full xl:max-w-sm bg-transparent rounded-lg block text-body-white focus:border-none focus:ring-2 focus:ring-white"
                   />
                 </FormSpacer>
-                {/* FIXME: Fix button size when submitting */}
                 <button
                   type="submit"
                   name="_action"

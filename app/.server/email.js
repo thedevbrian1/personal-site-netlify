@@ -1,44 +1,51 @@
-import Mailjet from 'node-mailjet';
+// import Mailjet from 'node-mailjet';
 import { Resend } from "resend";
+import mailchimp from "@mailchimp/mailchimp_marketing";
+import { createHash } from "node:crypto";
 
-export async function createContact(email) {
-    // const Mailjet = require('node-mailjet');
-    const mailjet = Mailjet.apiConnect(process.env.MJ_APIKEY_PUBLIC, process.env.MJ_APIKEY_PRIVATE);
+mailchimp.setConfig({
+    apiKey: process.env.MAILCHIMP_API_KEY,
+    server: process.env.MAILCHIMP_SERVER_PREFIX
+});
 
-    let res = null;
-    try {
-        res = await mailjet
-            .post("contact", { 'version': 'v3' })
-            .request({
-                "IsExcludedFromCampaigns": "true",
-                "Email": `${email}`
-            });
-        console.log('New contact: ', res.body);
-    } catch (err) {
-        throw new Response(err, { status: err.statusCode })
-    }
-    return res.body;
-}
+// export async function createContact(email) {
+//     // const Mailjet = require('node-mailjet');
+//     const mailjet = Mailjet.apiConnect(process.env.MJ_APIKEY_PUBLIC, process.env.MJ_APIKEY_PRIVATE);
 
-export async function addContactToList(contactEmail) {
-    // const Mailjet = require('node-mailjet');
-    const mailjet = Mailjet.apiConnect(process.env.MJ_APIKEY_PUBLIC, process.env.MJ_APIKEY_PRIVATE);
+//     let res = null;
+//     try {
+//         res = await mailjet
+//             .post("contact", { 'version': 'v3' })
+//             .request({
+//                 "IsExcludedFromCampaigns": "true",
+//                 "Email": `${email}`
+//             });
+//         console.log('New contact: ', res.body);
+//     } catch (err) {
+//         throw new Response(err, { status: err.statusCode })
+//     }
+//     return res.body;
+// }
 
-    try {
-        const res = await mailjet
-            .post("listrecipient", { 'version': 'v3' })
-            .request({
-                "IsUnsubscribed": "false",
-                // "ContactID": "478938490",
-                "ContactAlt": `${contactEmail}`,
-                "ListID": "47814",
-                // "ListAlt": "abcdef123"
-            });
-        console.log('New subscriber: ', res.body);
-    } catch (err) {
-        throw new Response(err, { status: err.statusCode });
-    }
-}
+// export async function addContactToList(contactEmail) {
+//     // const Mailjet = require('node-mailjet');
+//     const mailjet = Mailjet.apiConnect(process.env.MJ_APIKEY_PUBLIC, process.env.MJ_APIKEY_PRIVATE);
+
+//     try {
+//         const res = await mailjet
+//             .post("listrecipient", { 'version': 'v3' })
+//             .request({
+//                 "IsUnsubscribed": "false",
+//                 // "ContactID": "478938490",
+//                 "ContactAlt": `${contactEmail}`,
+//                 "ListID": "47814",
+//                 // "ListAlt": "abcdef123"
+//             });
+//         console.log('New subscriber: ', res.body);
+//     } catch (err) {
+//         throw new Response(err, { status: err.statusCode });
+//     }
+// }
 
 // export async function sendEmail({ name, email, message }) {
 //     // const Mailjet = require('node-mailjet');
@@ -94,4 +101,26 @@ export async function sendEmail(name, email, phone, message) {
     }
 
     return data;
+}
+
+export async function subscribe(name, email) {
+
+    function generateMD5(input) {
+        return createHash('md5').update(input).digest('hex');
+    }
+
+    let subscriberHash = generateMD5(email.toLowerCase());
+
+    let nameArray = name.split(' ');
+
+    let res = await mailchimp.lists.setListMember(process.env.MAILCHIMP_AUDIENCE_ID, subscriberHash, {
+        email_address: email,
+        status_if_new: 'subscribed',
+        merge_fields: {
+            FNAME: nameArray[0],
+            ...(nameArray[1] && { LNAME: nameArray[1] })
+        }
+    });
+
+    return res;
 }

@@ -1,4 +1,5 @@
 import {
+  Form,
   Link,
   Links,
   Meta,
@@ -7,13 +8,13 @@ import {
   ScrollRestoration,
   isRouteErrorResponse,
   json,
-  useFetcher,
-  useLoaderData,
+  useActionData,
   useNavigation,
   useRouteError,
+  useRouteLoaderData,
 } from "@remix-run/react";
 import Nav from "./components/Nav";
-import { ArrowLeftIcon, Bars, ErrorIcon, Facebook, LinkedIn, Twitter } from "./components/Icon";
+import { Bars, ErrorIcon, Facebook, LinkedIn, Twitter } from "./components/Icon";
 import Input from "./components/Input";
 import { redirect } from "@remix-run/node";
 import { honeypot } from "./.server/honeypot";
@@ -21,8 +22,8 @@ import { HoneypotInputs } from "remix-utils/honeypot/react";
 import { HoneypotProvider } from "remix-utils/honeypot/react";
 import { SpamError } from "remix-utils/honeypot/server";
 import { useSpinDelay } from "spin-delay";
-import { badRequest, validateEmail } from "./.server/validation";
-import { addContactToList, createContact } from "./.server/email";
+import { badRequest, validateEmail, validateName } from "./.server/validation";
+import { subscribe } from "./.server/email";
 import { FormSpacer } from "./components/FormSpacer";
 import "./styles/tailwind.css";
 import "./styles/animation.css";
@@ -32,7 +33,7 @@ export async function loader() {
 }
 
 export async function action({ request }) {
-  const formData = await request.formData();
+  let formData = await request.formData();
 
   try {
     honeypot.check(formData);
@@ -43,31 +44,40 @@ export async function action({ request }) {
     throw error;
   }
 
-  const email = formData.get('email');
+  let action = formData.get('_action');
 
-  const field = { email };
-  const fieldErrors = {
-    email: validateEmail(email)
+  switch (action) {
+    case 'subscribe': {
+      let email = formData.get('email');
+      let name = formData.get('name');
+
+      let field = { name, email };
+      let fieldErrors = {
+        name: validateName(name),
+        email: validateEmail(email)
+      }
+
+      // Return errors if any
+      if (Object.values(fieldErrors).some(Boolean)) {
+        return badRequest({ field, fieldErrors });
+      }
+
+      let { id } = await subscribe(name, email);
+
+      if (id) {
+        return redirect('/success');
+
+      }
+    }
   }
 
-  // Return errors if any
-  if (Object.values(fieldErrors).some(Boolean)) {
-    return badRequest({ field, fieldErrors });
-  }
-  // First create contact then add contact to a contact list
-  //
-  const contact = await createContact(email);
+  return null;
 
-  const contactEmail = contact.Data[0].Email;
-
-  await addContactToList(contactEmail);
-
-  return redirect('/success');
 }
 
 export function Layout({ children }) {
-  let { honeypotInputProps } = useLoaderData();
-
+  // let { honeypotInputProps } = useLoaderData();
+  let { honeypotInputProps } = useRouteLoaderData('root')
   let navigation = useNavigation();
   let isLoading = navigation.state === 'loading' && !navigation.formMethod;
 
@@ -134,8 +144,8 @@ export function Layout({ children }) {
         </header>
         <HoneypotProvider {...honeypotInputProps}>
           {children}
+          <Footer />
         </HoneypotProvider>
-        <Footer />
         <ScrollRestoration />
         <Scripts />
       </body>
@@ -143,11 +153,14 @@ export function Layout({ children }) {
   );
 }
 export default function App() {
-  return <Outlet />
+  return <Outlet />;
 }
 
 function Footer() {
-  const fetcher = useFetcher();
+  let actionData = useActionData();
+  let navigation = useNavigation();
+
+  let isSubmitting = navigation.state === 'submitting';
 
   return (
     <footer className="relative">
@@ -177,14 +190,29 @@ function Footer() {
               <p className="font-body text-body-white lg:text-lg mt-2 lg:mt-4">Receive interesting tips and articles in real time. You can unsubscribe at any time.</p>
             </div>
             <div className="md:w-3/4 lg:w-auto opacity-0 fade-in">
-              <fetcher.Form method="post" className="xl:max-w-sm">
+              <Form method="post" className="xl:max-w-sm">
                 <HoneypotInputs />
                 <fieldset className="grid gap-3">
                   <FormSpacer>
+                    <label htmlFor="name" className="text-body-white">
+                      Name
+                      {(actionData?.fieldErrors?.name)
+                        ? (<span className="text-red-500 ml-2">{actionData.fieldErrors.name}</span>)
+                        : <>&nbsp;</>
+                      }
+                    </label>
+                    <Input
+                      type="text"
+                      name="name"
+                      id="name"
+                      placeholder="John Doe"
+                    />
+                  </FormSpacer>
+                  <FormSpacer>
                     <label htmlFor="subscribe" className="text-body-white">
                       Email
-                      {(fetcher.data?.fieldErrors)
-                        ? (<span className="text-red-500 ml-2">{fetcher.data?.fieldErrors?.email}</span>)
+                      {(actionData?.fieldErrors)
+                        ? (<span className="text-red-500 ml-2">{actionData?.fieldErrors?.email}</span>)
                         : <>&nbsp;</>
                       }
                     </label>
@@ -204,13 +232,17 @@ function Footer() {
                     value="subscribe"
                     // onMouseEnter={handleHover}
                     className=" bg-gradient-to-r from-[#c94b4b] to-[#4b134f] hover:bg-gradient-to-r hover:from-[#4b134f] hover:to-[#c94b4b] transition ease-in-out duration-200 w-full py-3 px-auto  rounded-lg font-bold lg:text-lg text-white group">
-                    {(fetcher.submission)
+                    {isSubmitting
                       ? 'Subscribing...'
                       : 'Subscribe'
                     }
                   </button>
                 </fieldset>
-              </fetcher.Form>
+                {actionData?.formError
+                  ? <p className="text-red-500 mt-4">{actionData.formError}</p>
+                  : null
+                }
+              </Form>
             </div>
           </div>
         </div>
@@ -223,7 +255,7 @@ function Footer() {
 }
 
 export function ErrorBoundary() {
-  const error = useRouteError();
+  let error = useRouteError();
 
   if (isRouteErrorResponse(error)) {
     console.error({ error });
@@ -246,7 +278,8 @@ export function ErrorBoundary() {
           <div className='w-40'>
             <ErrorIcon />
           </div>
-          <h1 className='text-red-500 text-3xl'>Error fetching data</h1>
+          <h1 className='text-red-500 text-3xl'>Error</h1>
+          <p className="text-red-500 text-xl">{error.message}</p>
           <Link to="/" prefetch="intent" className='px-4 py-2 rounded flex gap-1 text-white bg-gradient-to-r from-[#c94b4b] to-[#4b134f] hover:bg-gradient-to-r hover:from-[#4b134f] hover:to-[#c94b4b]'> Try again</Link>
         </div>
       </div>
