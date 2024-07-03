@@ -1,8 +1,11 @@
 import { Link } from "@remix-run/react";
 import { useMotionValue, useTransform, motion } from "framer-motion";
+// import { useRef } from "react";
 import { ArrowLeftIcon } from "~/components/Icon";
 
 export default function Success() {
+    // let headingRef = useRef(null);
+
     const x = useMotionValue(0);
     const xInput = [-100, 0, 100];
     const color = useTransform(x, xInput, [
@@ -17,7 +20,7 @@ export default function Success() {
     return (
         <main className="h-screen w-full grid place-items-center">
             <div>
-                <h1 className="font-heading text-3xl lg:text-6xl text-white">Success</h1>
+                <h1 className="font-heading text-3xl lg:text-6xl text-white" tabIndex={-1} autoFocus>Success</h1>
                 <motion.div
                 // style={{ x }}
                 // drag="x"

@@ -1,7 +1,7 @@
 import { forwardRef, useEffect, useState } from "react";
 // import { motion } from "framer-motion";
 
-const Input = forwardRef(({ type, name, id, placeholder, defaultValue, fieldError }, ref) => {
+const Input = forwardRef(({ type, name, id, placeholder, defaultValue, fieldError, ariaDescribedBy }, ref) => {
     // const actionData = useActionData();
     const [isClientError, setIsClientError] = useState(true);
     // const errorState = isClientError && fieldError;
@@ -26,6 +26,7 @@ const Input = forwardRef(({ type, name, id, placeholder, defaultValue, fieldErro
                     id={id}
                     placeholder={placeholder}
                     onChange={handleChange}
+                    aria-describedby={ariaDescribedBy}
                     className={`block w-full px-3 py-2 border border-gray-100 bg-transparent rounded text-gray-200 focus:border-none focus:outline-none focus:ring-2 focus:ring-white transition ease-in-out duration-300 ${fieldError ? 'border-red-700' : 'border-gray-400'}`}
                 />)
                 : (<input
@@ -36,6 +37,7 @@ const Input = forwardRef(({ type, name, id, placeholder, defaultValue, fieldErro
                     placeholder={placeholder}
                     onChange={handleChange}
                     defaultValue={defaultValue}
+                    aria-describedby={ariaDescribedBy}
                     min={type === 'number' ? 1 : undefined}
                     // onBlur={handleBlur}
                     // onBlur={onBlur}

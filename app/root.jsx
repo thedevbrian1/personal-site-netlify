@@ -14,7 +14,7 @@ import {
   useRouteLoaderData,
 } from "@remix-run/react";
 import Nav from "./components/Nav";
-import { Bars, ErrorIcon, Facebook, LinkedIn, Twitter } from "./components/Icon";
+import { Bars, ErrorIcon, Facebook, LinkedIn, ThreeDots, Twitter } from "./components/Icon";
 import Input from "./components/Input";
 import { redirect } from "@remix-run/node";
 import { honeypot } from "./.server/honeypot";
@@ -27,6 +27,7 @@ import { subscribe } from "./.server/email";
 import { FormSpacer } from "./components/FormSpacer";
 import "./styles/tailwind.css";
 import "./styles/animation.css";
+import { useEffect, useRef } from "react";
 
 export async function loader() {
   return json({ honeypotInputProps: honeypot.getInputProps() });
@@ -173,6 +174,21 @@ function Footer() {
 
   let isSubmitting = navigation.state === 'submitting';
 
+  let nameRef = useRef(null);
+  let emailRef = useRef(null);
+  let mounted = useRef(false);
+
+  useEffect(() => {
+    if (actionData?.fieldErrors.name && mounted.current) {
+      nameRef.current.focus();
+    } else if (actionData?.fieldErrors.email && mounted.current) {
+      emailRef.current.focus();
+    }
+
+    mounted.current = true;
+
+  }, [actionData]);
+
   return (
     <footer className="relative">
       <div className="w-36 h-36 lg:w-44 lg:h-44 absolute -left-20 lg:-left-36 top-10 bg-brand-orange blur-3xl bg-opacity-20 rounded-full" />
@@ -223,31 +239,35 @@ function Footer() {
                     <label htmlFor="name" className="text-body-white">
                       Name
                       {(actionData?.fieldErrors?.name)
-                        ? (<span className="text-red-500 ml-2">{actionData.fieldErrors.name}</span>)
+                        ? (<span className="text-red-500 ml-2" id="name-error">{actionData.fieldErrors.name}</span>)
                         : <>&nbsp;</>
                       }
                     </label>
                     <Input
+                      ref={nameRef}
                       type="text"
                       name="name"
                       id="name"
                       placeholder="John Doe"
+                      ariaDescribedBy='name-error'
                     />
                   </FormSpacer>
                   <FormSpacer>
                     <label htmlFor="subscribe" className="text-body-white">
                       Email
                       {(actionData?.fieldErrors)
-                        ? (<span className="text-red-500 ml-2">{actionData?.fieldErrors?.email}</span>)
+                        ? (<span className="text-red-500 ml-2" id='email-error'>{actionData?.fieldErrors?.email}</span>)
                         : <>&nbsp;</>
                       }
                     </label>
 
                     <Input
+                      ref={emailRef}
                       type='email'
                       name='email'
                       id='subscribe'
                       placeholder='johndoe@gmail.com'
+                      ariaDescribedBy='email-error'
                     />
                   </FormSpacer>
 
@@ -256,11 +276,12 @@ function Footer() {
                     type="submit"
                     name="_action"
                     value="subscribe"
+                    aria-live="assertive"
                     // onMouseEnter={handleHover}
-                    className=" bg-gradient-to-r from-[#c94b4b] to-[#4b134f] hover:bg-gradient-to-r hover:from-[#4b134f] hover:to-[#c94b4b] transition ease-in-out duration-200 w-full py-3 px-auto  rounded-lg font-bold lg:text-lg text-white group">
+                    className=" bg-gradient-to-r from-[#c94b4b] to-[#4b134f] hover:bg-gradient-to-r hover:from-[#4b134f] hover:to-[#c94b4b] transition ease-in-out duration-200 w-full py-3 px-auto  rounded-lg font-bold lg:text-lg flex justify-center text-white group">
                     {isSubmitting
-                      ? 'Subscribing...'
-                      : 'Subscribe'
+                      ? (<div className="w-10" aria-label="submitting"><ThreeDots /></div>)
+                      : 'Submit'
                     }
                   </button>
                 </fieldset>

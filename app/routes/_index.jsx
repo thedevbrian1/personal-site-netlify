@@ -1,4 +1,4 @@
-import { Link, isRouteErrorResponse, useFetcher, useLoaderData, useRouteError } from "@remix-run/react";
+import { Form, Link, isRouteErrorResponse, useActionData, useFetcher, useLoaderData, useNavigation, useRouteError } from "@remix-run/react";
 import { redirect } from "@remix-run/node";
 import Heading from "../components/Heading";
 import Input from "../components/Input";
@@ -11,6 +11,7 @@ import { HoneypotInputs } from "remix-utils/honeypot/react";
 import { SpamError } from "remix-utils/honeypot/server";
 import { getProjects } from "~/models/project";
 import { FormSpacer } from "~/components/FormSpacer";
+import { useEffect, useRef } from "react";
 
 export const meta = () => {
   return [
@@ -40,33 +41,35 @@ export async function action({ request }) {
 
   const action = formData.get('_action');
 
-  if (action === 'contact') {
-    // Send email
-    const name = formData.get('name');
-    let phone = formData.get('phone');
-    const email = formData.get('email');
-    const message = formData.get('message');
+  switch (action) {
+    case 'contact': {
+      // Send email
+      const name = formData.get('name');
+      let phone = formData.get('phone');
+      const email = formData.get('email');
+      const message = formData.get('message');
 
-    const fields = { name, email, message };
+      const fields = { name, email, message };
 
-    let trimmedPhone = trimValue(phone);
+      let trimmedPhone = trimValue(phone);
 
-    const fieldErrors = {
-      name: validateName(name),
-      phone: validatePhone(trimmedPhone),
-      email: validateEmail(email),
-      message: validateMessage(message)
-    };
+      const fieldErrors = {
+        name: validateName(name),
+        phone: validatePhone(trimmedPhone),
+        email: validateEmail(email),
+        message: validateMessage(message)
+      };
 
-    // Return errors if any
-    if (Object.values(fieldErrors).some(Boolean)) {
-      return badRequest({ fieldErrors, fields });
-    }
+      // Return errors if any
+      if (Object.values(fieldErrors).some(Boolean)) {
+        return badRequest({ fieldErrors, fields });
+      }
 
-    let { id } = await sendEmail(name, email, trimmedPhone, message);
+      let { id } = await sendEmail(name, email, trimmedPhone, message);
 
-    if (id) {
-      return redirect('/success');
+      if (id) {
+        return redirect('/success');
+      }
     }
   }
 
@@ -186,8 +189,32 @@ function Projects() {
 
 
 function ContactForm() {
-  const fetcher = useFetcher();
-  let isSubmitting = fetcher.state !== 'idle';
+  let actionData = useActionData();
+
+  let navigation = useNavigation();
+
+  let isSubmitting = navigation.state === 'submitting';
+
+  let mounted = useRef(false);
+  let nameRef = useRef(null);
+  let phoneRef = useRef(null);
+  let emailRef = useRef(null);
+  let messageRef = useRef(null);
+
+  useEffect(() => {
+    if (actionData?.fieldErrors.name && mounted.current) {
+      nameRef.current.focus();
+    } else if (actionData?.fieldErrors.phone && mounted.current) {
+      phoneRef.current.focus();
+    } else if (actionData?.fieldErrors.email && mounted.current) {
+      emailRef.current.focus();
+    } else if (actionData?.fieldErrors.message && mounted.current) {
+      messageRef.current.focus();
+    }
+
+    mounted.current = true;
+
+  }, [actionData]);
 
   return (
     <section
@@ -218,70 +245,77 @@ function ContactForm() {
           </div>
           <div className="lg:px-2 ">
             {/* Form */}
-            <fetcher.Form method="post" className="xl:max-w-sm fade-in">
+            <Form method="post" className="xl:max-w-sm fade-in">
               <HoneypotInputs />
               <h3 className="font-heading font-semibold text-white text-xl">Send me a message</h3>
               <fieldset className="space-y-3 mt-4">
                 <FormSpacer>
                   <label htmlFor="name" className="text-body-white">
                     Name
-                    {fetcher.data?.fieldErrors
-                      ? (<span className="text-red-500 ml-2">{fetcher.data?.fieldErrors?.name}</span>)
+                    {actionData?.fieldErrors.name
+                      ? (<span className="text-red-500 ml-2" id="username-error">{actionData.fieldErrors.name}</span>)
                       : <>&nbsp;</>
                     }
                   </label>
                   <Input
-                    // ref={nameRef}
+                    ref={nameRef}
                     type='text'
                     name='name'
                     id='name'
                     placeholder='John Doe'
+                    ariaDescribedBy='username-error'
                   />
                 </FormSpacer>
                 <FormSpacer>
                   <label htmlFor="phone" className="text-body-white">
                     Phone
-                    {fetcher.data?.fieldErrors?.phone
-                      ? (<span className="text-red-500 ml-2">{fetcher.data.fieldErrors.phone}</span>)
+                    {actionData?.fieldErrors?.phone
+                      ? (<span className="text-red-500 ml-2" id="phone-error">{actionData.fieldErrors.phone}</span>)
                       : <>&nbsp;</>
                     }
                   </label>
                   <Input
+                    ref={phoneRef}
                     type="text"
                     name="phone"
                     id="phone"
                     placeholder="+254 712 345 678"
+                    ariaDescribedBy='phone-error'
                   />
                 </FormSpacer>
                 <FormSpacer>
                   <label htmlFor="email" className="text-body-white">
                     Email
-                    {fetcher.data?.fieldErrors
-                      ? (<span className="text-red-500 ml-2">{fetcher.data?.fieldErrors?.email}</span>)
+                    {actionData?.fieldErrors.email
+                      ? (<span className="text-red-500 ml-2" id='user-email-error'>{actionData.fieldErrors.email}</span>)
                       : <>&nbsp;</>
                     }
                   </label>
                   <Input
+                    ref={emailRef}
                     type='email'
                     name='email'
                     id='email'
                     placeholder='johndoe@gmail.com'
+                    ariaDescribedBy='user-email-error'
                   />
                 </FormSpacer>
                 <FormSpacer>
                   <label htmlFor="message" className="text-body-white">
                     Message
-                    {fetcher.data?.fieldErrors
-                      ? (<span className="text-red-500 ml-2">{fetcher.data?.fieldErrors?.message}</span>)
+                    {actionData?.fieldErrors.message
+                      ? (<span className="text-red-500 ml-2" id='message-error'>{actionData.fieldErrors.message}</span>)
                       : <>&nbsp;</>
                     }
                   </label>
                   <Input
+                    ref={messageRef}
                     type="textarea"
                     name="message"
                     id="message"
                     // cols="30" 
                     rows="4"
+                    ariaDescribedBy='message-error'
                   // className="w-full xl:max-w-sm bg-transparent rounded-lg block text-body-white focus:border-none focus:ring-2 focus:ring-white"
                   />
                 </FormSpacer>
@@ -289,15 +323,16 @@ function ContactForm() {
                   type="submit"
                   name="_action"
                   value="contact"
+                  aria-live="assertive"
                   className="bg-gradient-to-r from-[#c94b4b] to-[#4b134f] hover:bg-gradient-to-r hover:from-[#4b134f] hover:to-[#c94b4b] transition ease-in-out duration-200 w-full flex justify-center py-3  rounded-lg font-bold lg:text-lg text-white"
                 >
                   {isSubmitting
-                    ? (<div className="w-10"><ThreeDots /></div>)
+                    ? (<div className="w-10" aria-label="submitting"><ThreeDots /></div>)
                     : 'Submit'
                   }
                 </button>
               </fieldset>
-            </fetcher.Form>
+            </Form>
           </div>
         </div>
       </div>
