@@ -40,6 +40,14 @@ const components = {
                 className="revealing-image max-w-xs lg:max-w-sm mx-auto aspect-[4/3] object-contain"
             />
         ),
+        customImage: ({ value }) => (
+            <img
+                src={`${urlFor(value.image)}`}
+                alt=""
+                className="revealing-image max-w-xs lg:max-w-sm mx-auto aspect-[4/3] object-contain"
+            />
+        )
+        ,
         code: Code,
         youtube: ({ value }) => {
             if (!value || !value.url) {
@@ -54,7 +62,9 @@ const components = {
         }
     },
     block: {
-        h2: ({ children }) => <h2 className='text-gray-300'>{children}</h2>
+        h2: ({ children }) => <h2 className='text-gray-300'>{children}</h2>,
+        h3: ({ children }) => <h3 className='text-gray-300'>{children}</h3>,
+        h4: ({ children }) => <h4 className='text-gray-300'>{children}</h4>
     },
     marks: {
         link: ({ value, children }) => {
@@ -69,7 +79,8 @@ const components = {
                     {children}
                 </a>
             )
-        }
+        },
+        strong: ({ children }) => <strong className='text-gray-300'>{children}</strong>
     }
 }
 
