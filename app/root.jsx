@@ -76,8 +76,9 @@ export async function action({ request }) {
 }
 
 export function Layout({ children }) {
-  // let { honeypotInputProps } = useLoaderData();
-  let { honeypotInputProps } = useRouteLoaderData('root')
+  let { honeypotInputProps } = useRouteLoaderData('root');
+  let error = useRouteError();
+
   let navigation = useNavigation();
   let isLoading = navigation.state === 'loading' && !navigation.formMethod;
 
@@ -144,7 +145,7 @@ export function Layout({ children }) {
         </header>
         <HoneypotProvider {...honeypotInputProps}>
           {children}
-          <Footer />
+          {!error && <Footer />}
         </HoneypotProvider>
         <ScrollRestoration />
         <Scripts />
