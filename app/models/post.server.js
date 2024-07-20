@@ -2,7 +2,7 @@ const queryUrl = `https://${process.env.SANITY_PROJECT_ID}.api.sanity.io/v2022-1
 const mutationUrl = `https://${process.env.SANITY_PROJECT_ID}.api.sanity.io/v2022-10-20/data/mutate/production`;
 
 export async function getPosts() {
-    const postsQuery = `*[_type == 'post'] | order(_createdAt asc) {_id,title,description,slug{current},_createdAt,mainImage{asset->{url}}}`;
+    const postsQuery = `*[_type == 'post'] | order(_createdAt desc) {_id,title,description,slug{current},_createdAt,mainImage{asset->{url}}}`;
     const postsUrl = `${queryUrl}?query=${encodeURIComponent(postsQuery)}`;
     const res = await fetch(postsUrl);
 
