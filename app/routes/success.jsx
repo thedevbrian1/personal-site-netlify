@@ -20,6 +20,7 @@ export default function Success() {
     return (
         <main className="h-screen w-full grid place-items-center">
             <div>
+                {/* FIXME: Screen reader users are not aware of the success message */}
                 <h1 className="font-heading text-3xl lg:text-6xl text-white" tabIndex={-1} autoFocus>Success</h1>
                 <motion.div
                 // style={{ x }}

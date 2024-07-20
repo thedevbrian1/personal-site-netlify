@@ -20,7 +20,8 @@ export async function getPosts() {
 }
 
 export async function getPost(slug) {
-    const postQuery = `*[_type == 'post' && slug.current == '${slug}']{title,description,body,_createdAt,altText,mainImage{asset->{url}}}`;
+    // const postQuery = `*[_type == 'post' && slug.current == '${slug}']{title,description,body[]{..., _type == 'videoBlogPost' => {..., "video": video{...,"asset": asset ->}}},_createdAt,altText,mainImage{asset->{url}}}`;
+    let postQuery = `*[_type == 'post' && slug.current == '${slug}']{title,description,body,_createdAt,altText,mainImage{asset->{url}}}`;
     const postUrl = `${queryUrl}?query=${encodeURIComponent(postQuery)}`;
     const res = await fetch(postUrl);
 

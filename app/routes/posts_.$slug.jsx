@@ -4,10 +4,13 @@ import { useEffect, useState } from 'react';
 import { PortableText } from '@portabletext/react';
 import { getPost } from '../models/post.server';
 import { ArrowLeftIcon, CheckIcon, ClipboardIcon, ErrorIcon } from '../components/Icon';
+// import MuxPlayer from '@mux/mux-player-react';
+// import MuxVideo from '@mux/mux-video-react';
 import ReactPlayer from "react-player/youtube";
 import Lowlight from "react-lowlight";
 import javascript from 'highlight.js/lib/languages/javascript';
 import 'highlight.js/styles/night-owl.css';
+
 
 import { urlFor } from '~/utils';
 
@@ -40,6 +43,24 @@ const components = {
                 className="revealing-image max-w-xs lg:max-w-sm mx-auto aspect-[4/3] object-contain"
             />
         ),
+        // FIXME: Video not showing
+        // videoBlogPost: ({ value }) => {
+        //     console.log({ value });
+        //     return (
+        //         <MuxPlayer
+        //             playbackId={value.video.asset.playbackId}
+        //             metadata={value.title ? { video_title: value.title } : undefined}
+        //         />
+        //         // <MuxVideo
+        //         //     playbackId={value.video.asset.playbackId}
+        //         //     metadata={value.title ? { video_title: value.title } : undefined}
+        //         //     controls
+        //         //     autoPlay
+        //         //     muted
+        //         // />
+
+        //     )
+        // },
         customImage: ({ value }) => (
             <img
                 src={`${urlFor(value.image)}`}
