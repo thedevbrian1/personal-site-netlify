@@ -13,10 +13,11 @@ import {
   useRouteError,
   useRouteLoaderData,
 } from "@remix-run/react";
+import { redirect } from "@remix-run/node";
+import { useEffect, useRef, useState } from "react";
 import Nav from "./components/Nav";
 import { Bars, ErrorIcon, Facebook, LinkedIn, ThreeDots, Twitter } from "./components/Icon";
 import Input from "./components/Input";
-import { redirect } from "@remix-run/node";
 import { honeypot } from "./.server/honeypot";
 import { HoneypotInputs } from "remix-utils/honeypot/react";
 import { HoneypotProvider } from "remix-utils/honeypot/react";
@@ -27,7 +28,6 @@ import { subscribe } from "./.server/email";
 import { FormSpacer } from "./components/FormSpacer";
 import "./styles/tailwind.css";
 import "./styles/animation.css";
-import { useEffect, useRef } from "react";
 
 export async function loader() {
   return json({ honeypotInputProps: honeypot.getInputProps() });
@@ -80,6 +80,8 @@ export function Layout({ children }) {
   let error = useRouteError();
   let data = useRouteLoaderData('root');
 
+  let [href, setHref] = useState('');
+
   let honeypotInputProps;
   if (!error) {
     honeypotInputProps = data.honeypotInputProps;
@@ -120,6 +122,17 @@ export function Layout({ children }) {
       id: 5,
     }
   ];
+
+  useEffect(() => {
+    let isMobileDevice = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    let phoneNumber = '+254710162152';
+    if (isMobileDevice) {
+      setHref(`whatsapp://send?phone=${phoneNumber}`);
+    } else {
+      setHref(`https://web.whatsapp.com/send?phone=${phoneNumber}`)
+    }
+  }, []);
+
   return (
     <html lang="en">
       <head>
@@ -155,6 +168,16 @@ export function Layout({ children }) {
           : <HoneypotProvider {...honeypotInputProps}>
             {children}
             {<Footer />}
+            <div className="fixed bottom-10 right-5 md:right-10">
+              <a href={href} target="_blank" className="group">
+                <img
+                  src="/whatsapp.svg"
+                  alt="WhatsApp icon"
+                  loading="lazy"
+                  className="w-6 h-6 md:w-8 md:h-8 group-hover:scale-105 transition-transform duration-300 ease-in-out "
+                />
+              </a>
+            </div>
           </HoneypotProvider>
         }
 
